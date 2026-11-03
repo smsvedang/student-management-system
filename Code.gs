@@ -105,7 +105,7 @@ function requireSession_(token) {
 }
 
 function adminAction_(p) {
-  const action = String(p.action || '');
+  const action = String(p.task || p.action || '');
   switch (action) {
     case 'dashboard': return dashboard_();
     case 'listStudents': return listStudents_(p.q || '');
@@ -234,6 +234,8 @@ function saveForm_(form) {
   if (!fields.length) throw new Error('Add at least one field.');
   const sh=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.FORMS_TAB);
   const id=form.id||Utilities.getUuid().slice(0,8);
+  const main=getMainSheet_(), mainHi=headerInfo_(main);
+  fields.forEach(field=>{ if(!mainHi.headers.some(h=>norm_(h.name)===norm_(field.label))) { const added=ensureColumn_(main,mainHi,field.label); mainHi.headers.push(added); } });
   const rows=sh.getLastRow()>1?sh.getRange(2,1,sh.getLastRow()-1,7).getValues():[];
   const idx=rows.findIndex(r=>String(r[0])===String(id));
   const now=new Date();
