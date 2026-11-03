@@ -295,7 +295,20 @@ function saveForm_(form) {
   const sh=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.FORMS_TAB);
   const id=form.id||Utilities.getUuid().slice(0,8);
   const main=getMainSheet_(), mainHi=headerInfo_(main);
-  fields.forEach(field=>{ if(!mainHi.headers.some(h=>norm_(h.name)===norm_(field.label))) { const added=ensureColumn_(main,mainHi,field.label); mainHi.headers.push(added); } });
+  fields.forEach(field=>{
+    if (field.source === 'sheet') {
+      if (!field.sourceColumn || !mainHi.headers.some(h=>norm_(h.name)===norm_(field.sourceColumn))) {
+        throw new Error('Auto-fill source column not found in the student sheet: ' + (field.sourceColumn || field.label));
+      }
+      // Auto-fill fields read existing data only; never create a destination column.
+      return;
+    }
+    // Only manual-entry fields need a destination column in the student sheet.
+    if (!mainHi.headers.some(h=>norm_(h.name)===norm_(field.label))) {
+      const added=ensureColumn_(main,mainHi,field.label);
+      mainHi.headers.push(added);
+    }
+  });
   const rows=sh.getLastRow()>1?sh.getRange(2,1,sh.getLastRow()-1,7).getValues():[];
   const idx=rows.findIndex(r=>String(r[0])===String(id));
   const now=new Date();
@@ -317,41 +330,54 @@ function submitForm_(id,data) {
   const pub=publicForm_(id).form;
   const sh=getMainSheet_(), hi=headerInfo_(sh);
   const lookupField=pub.fields.find(f=>f.lookupKey);
-  let student=null;
-  if (lookupField) student=lookupStudent_(data[lookupField.key], id).student;
-  const values={};
-  pub.fields.forEach(f=>{
-    let v = f.source === 'sheet' && student ? (student[f.sourceColumn] || '') : data[f.key];
-    if(f.required && (v===undefined || String(v).trim()==='')) throw new Error(f.label+' is required.');
-    values[norm_(f.label)]=v||'';
-  });
-  const enroll=findCol_(hi,'enrollment number|enrollment no');
-  const submittedEnroll=lookupField ? data[lookupField.key] : (values[norm_('Enrollment Number')]||'');
+  const enrollCol=findCol_(hi,'enrollment number|enrollment no');
+  if (!enrollCol) throw new Error('Enrollment Number column is missing in the student sheet.');
+  const submittedEnroll=lookupField ? data[lookupField.key] : (data.enrollmentNumber || data.enrollment || '');
+  if (!submittedEnroll) throw new Error('Enrollment Number is required for student verification.');
+
+  // Locate the existing student row. Public forms update this record; they never append a new student.
+  const last=sh.getLastRow();
+  const enrollments=last>hi.row?sh.getRange(hi.row+1,enrollCol,last-hi.row,1).getDisplayValues().flat():[];
+  const matchIndex=enrollments.findIndex(v=>String(v||'').trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase());
+  if (matchIndex<0) throw new Error('Enrollment number could not be verified.');
+  const target=hi.row+1+matchIndex;
   const responseSheet=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.RESPONSES_TAB);
-  if (lookupField && submittedEnroll) {
+
+  // Prevent duplicate submissions for the same form and enrollment.
+  if (lookupField) {
     const prior=responseSheet.getLastRow()>1?responseSheet.getRange(2,1,responseSheet.getLastRow()-1,6).getDisplayValues():[];
     if (prior.some(r=>String(r[1])===String(id) && String(r[4]).trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase())) {
       throw new Error('A response for this Enrollment Number has already been submitted.');
     }
   }
-  if(enroll && submittedEnroll) {
-    const existing=sh.getRange(hi.row+1,enroll,Math.max(0,sh.getLastRow()-hi.row),1).getDisplayValues().flat();
-    const matching = existing.some(v=>v.trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase());
-    if (!matching) throw new Error('Enrollment number could not be verified.');
-    // Enrollment-based forms are confirmation/update requests, not new student registrations.
-  }
-  const width=sh.getLastColumn();
-  const row=new Array(width).fill('');
-  const target=sh.getLastRow()+1;
+
+  const student=lookupStudent_(submittedEnroll,id).student;
+  const manualValues={};
   pub.fields.forEach(f=>{
-    let col=hi.headers.find(h=>norm_(h.name)===norm_(f.label));
-    if(!col) { col=ensureColumn_(sh,hi,f.label); hi.headers.push(col); }
-    row[col.col-1]=values[norm_(f.label)]||'';
+    if (f.source==='sheet') {
+      if (!f.sourceColumn || !Object.prototype.hasOwnProperty.call(student,f.sourceColumn)) {
+        throw new Error('Auto-fill source column is not available: '+(f.sourceColumn||f.label));
+      }
+      const v=student[f.sourceColumn]||'';
+      if (f.required && !String(v).trim()) throw new Error(f.label+' is required in the student database.');
+      return; // Keep existing sheet data unchanged.
+    }
+    const v=data[f.key];
+    if (f.required && (v===undefined || String(v).trim()==='')) throw new Error(f.label+' is required.');
+    manualValues[f.label]=v===undefined?'':v;
   });
-  sh.getRange(target,1,1,sh.getLastColumn()).setValues([row.concat(new Array(Math.max(0,sh.getLastColumn()-row.length)).fill(''))]);
+
+  // Update only manually entered fields in the matched student's existing row.
+  const latestHi=headerInfo_(sh);
+  Object.keys(manualValues).forEach(label=>{
+    let col=latestHi.headers.find(h=>norm_(h.name)===norm_(label));
+    if (!col) throw new Error('Destination column is missing for manual field: '+label+'. Save the form again to create it.');
+    sh.getRange(target,col.col).setValue(manualValues[label]);
+  });
+
   responseSheet.appendRow([new Date(),id,pub.title,target,submittedEnroll,JSON.stringify(data)]);
   log_('PUBLIC_SUBMISSION',pub.title,'public');
-  return {ok:true,message:'Your information has been submitted.'};
+  return {ok:true,message:'Your information has been submitted and your student record has been updated.'};
 }
 
 function ensureColumn_(sh,hi,label) {
