@@ -318,7 +318,7 @@ function submitForm_(id,data) {
   const sh=getMainSheet_(), hi=headerInfo_(sh);
   const lookupField=pub.fields.find(f=>f.lookupKey);
   let student=null;
-  if (lookupField) student=lookupStudent_(data[lookupField.key]).student;
+  if (lookupField) student=lookupStudent_(data[lookupField.key], id).student;
   const values={};
   pub.fields.forEach(f=>{
     let v = f.source === 'sheet' && student ? (student[f.sourceColumn] || '') : data[f.key];
