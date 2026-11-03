@@ -297,24 +297,29 @@ function deleteForm_(id) {
 function submitForm_(id,data) {
   const pub=publicForm_(id).form;
   const sh=getMainSheet_(), hi=headerInfo_(sh);
+  const lookupField=pub.fields.find(f=>f.lookupKey);
+  let student=null;
+  if (lookupField) student=lookupStudent_(data[lookupField.key]).student;
   const values={};
   pub.fields.forEach(f=>{
-    const v=data[f.key];
+    let v = f.source === 'sheet' && student ? (student[f.sourceColumn] || '') : data[f.key];
     if(f.required && (v===undefined || String(v).trim()==='')) throw new Error(f.label+' is required.');
     values[norm_(f.label)]=v||'';
   });
-  const width=sh.getLastColumn();
-  const row=new Array(width).fill('');
-  let target=sh.getLastRow()+1;
   const enroll=findCol_(hi,'enrollment number|enrollment no');
-  const submittedEnroll=values[norm_('Enrollment Number')]||'';
+  const submittedEnroll=lookupField ? data[lookupField.key] : (values[norm_('Enrollment Number')]||'');
   if(enroll && submittedEnroll) {
     const existing=sh.getRange(hi.row+1,enroll,Math.max(0,sh.getLastRow()-hi.row),1).getDisplayValues().flat();
-    if(existing.some(v=>v.trim()===String(submittedEnroll).trim())) throw new Error('This enrollment number is already registered.');
+    const matching = existing.some(v=>v.trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase());
+    if (!matching) throw new Error('Enrollment number could not be verified.');
+    // Enrollment-based forms are confirmation/update requests, not new student registrations.
   }
+  const width=sh.getLastColumn();
+  const row=new Array(width).fill('');
+  const target=sh.getLastRow()+1;
   pub.fields.forEach(f=>{
     let col=hi.headers.find(h=>norm_(h.name)===norm_(f.label));
-    if(!col) col=ensureColumn_(sh,hi,f.label);
+    if(!col) { col=ensureColumn_(sh,hi,f.label); hi.headers.push(col); }
     row[col.col-1]=values[norm_(f.label)]||'';
   });
   sh.getRange(target,1,1,sh.getLastColumn()).setValues([row.concat(new Array(Math.max(0,sh.getLastColumn()-row.length)).fill(''))]);
