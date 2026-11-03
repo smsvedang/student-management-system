@@ -59,7 +59,7 @@ function doGet(e) {
       if (cached) CacheService.getScriptCache().remove(key);
     }
     else if (action === 'publicForm') result = publicForm_(p.formId);
-    else if (action === 'lookupStudent') result = lookupStudent_(p.enrollment);
+    else if (action === 'lookupStudent') result = lookupStudent_(p.enrollment, p.formId);
     else if (action === 'admin') {
       requireSession_(p.token);
       result = adminAction_(p);
@@ -238,9 +238,11 @@ function formMeta_() {
   return {ok:true, columns:hi.headers.map(h=>h.name), identityColumn:findCol_(hi,'enrollment number|enrollment no') ? hi.headers.find(h=>h.col===findCol_(hi,'enrollment number|enrollment no')).name : ''};
 }
 
-function lookupStudent_(enrollment) {
+function lookupStudent_(enrollment, formId) {
   const key = String(enrollment || '').trim().toLowerCase();
   if (!key) throw new Error('Enter your enrollment number first.');
+  const form = publicForm_(formId).form;
+  const allowed = form.fields.filter(f=>f.source==='sheet').map(f=>String(f.sourceColumn||''));
   const sh = getMainSheet_(), hi = headerInfo_(sh);
   const col = findCol_(hi,'enrollment number|enrollment no');
   if (!col) throw new Error('Enrollment Number column is missing in the student sheet.');
@@ -249,7 +251,7 @@ function lookupStudent_(enrollment) {
   const idx = rows.findIndex(r => String(r[col-1] || '').trim().toLowerCase() === key);
   if (idx < 0) throw new Error('Enrollment number not found. Please check it or contact your administrator.');
   const record = {};
-  hi.headers.forEach(h => record[h.name] = rows[idx][h.col-1] || '');
+  hi.headers.forEach(h => { if (allowed.indexOf(h.name)>=0 || h.col===col) record[h.name] = rows[idx][h.col-1] || ''; });
   return {ok:true,student:record};
 }
 
@@ -308,6 +310,13 @@ function submitForm_(id,data) {
   });
   const enroll=findCol_(hi,'enrollment number|enrollment no');
   const submittedEnroll=lookupField ? data[lookupField.key] : (values[norm_('Enrollment Number')]||'');
+  const responseSheet=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.RESPONSES_TAB);
+  if (lookupField && submittedEnroll) {
+    const prior=responseSheet.getLastRow()>1?responseSheet.getRange(2,1,responseSheet.getLastRow()-1,6).getDisplayValues():[];
+    if (prior.some(r=>String(r[1])===String(id) && String(r[4]).trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase())) {
+      throw new Error('A response for this Enrollment Number has already been submitted.');
+    }
+  }
   if(enroll && submittedEnroll) {
     const existing=sh.getRange(hi.row+1,enroll,Math.max(0,sh.getLastRow()-hi.row),1).getDisplayValues().flat();
     const matching = existing.some(v=>v.trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase());
@@ -323,7 +332,7 @@ function submitForm_(id,data) {
     row[col.col-1]=values[norm_(f.label)]||'';
   });
   sh.getRange(target,1,1,sh.getLastColumn()).setValues([row.concat(new Array(Math.max(0,sh.getLastColumn()-row.length)).fill(''))]);
-  SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.RESPONSES_TAB).appendRow([new Date(),id,pub.title,target,submittedEnroll,JSON.stringify(data)]);
+  responseSheet.appendRow([new Date(),id,pub.title,target,submittedEnroll,JSON.stringify(data)]);
   log_('PUBLIC_SUBMISSION',pub.title,'public');
   return {ok:true,message:'Your information has been submitted.'};
 }
