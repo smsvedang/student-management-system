@@ -284,11 +284,12 @@ function submitForm_(id,data) {
 
 function ensureColumn_(sh,hi,label) {
   const last=sh.getLastColumn();
-  const insertAt=last+2;
-  if(last>0) sh.insertColumnAfter(last);
-  sh.insertColumnAfter(last+1);
-  sh.getRange(hi.row,insertAt).setValue(label);
-  return {name:label,col:insertAt};
+  // Add a blank spacer column, then the new data column.
+  if(last>0) sh.insertColumnsAfter(last,2);
+  else sh.insertColumns(1,2);
+  const dataCol=last+2;
+  sh.getRange(hi.row,dataCol).setValue(label);
+  return {name:label,col:dataCol};
 }
 
 function getResponses_() {
