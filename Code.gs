@@ -40,6 +40,12 @@ function doGet(e) {
   let result;
   try {
     if (action === 'ping') result = {ok:true, message:'Student Management API ready'};
+    else if (action === 'postResult') {
+      const key = 'sms_result_' + String(p.nonce || '');
+      const cached = p.nonce ? CacheService.getScriptCache().get(key) : null;
+      result = cached ? JSON.parse(cached) : {ok:false, pending:true};
+      if (cached) CacheService.getScriptCache().remove(key);
+    }
     else if (action === 'publicForm') result = publicForm_(p.formId);
     else if (action === 'admin') {
       requireSession_(p.token);
@@ -65,9 +71,10 @@ function doPost(e) {
   } catch (err) {
     result = {ok:false, error:err.message || String(err)};
   }
-  const safe = JSON.stringify(result).replace(/</g,'\\u003c');
-  const html = '<!doctype html><html><body><script>window.parent.postMessage({type:"SMS_API_RESULT",payload:'+safe+'},"*");</script></body></html>';
-  return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  const p = parsePost_(e);
+  const nonce = String((e && e.parameter && e.parameter.nonce) || p.nonce || '');
+  if (nonce) CacheService.getScriptCache().put('sms_result_' + nonce, JSON.stringify(result), 120);
+  return HtmlService.createHtmlOutput('<!doctype html><html><body>Request received.</body></html>').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function parsePost_(e) {
