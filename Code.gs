@@ -26,6 +26,18 @@ function setup() {
   ensureSystemTab_(ss, CFG.FORMS_TAB, ['Form ID','Form Title','Description','Fields JSON','Published','Created At','Updated At']);
   ensureSystemTab_(ss, CFG.RESPONSES_TAB, ['Timestamp','Form ID','Form Title','Student Row','Enrollment Number','Submission JSON']);
   ensureSystemTab_(ss, CFG.LOGS_TAB, ['Timestamp','Action','Details','Actor']);
+
+  // If the spreadsheet has no student-data tab yet, create an empty one.
+  // Never replace, rename, or clear an existing non-system sheet.
+  const systemNames = [CFG.FORMS_TAB, CFG.RESPONSES_TAB, CFG.LOGS_TAB];
+  const hasStudentTab = ss.getSheets().some(s => systemNames.indexOf(s.getName()) < 0);
+  if (!hasStudentTab) {
+    const students = ss.insertSheet(CFG.STUDENTS_TAB);
+    students.getRange(1,1,1,8).setValues([[
+      'Name of Student','Mobile Number','Enrollment Number','Email ID of Student',
+      'Name of Father','Mobile Number of Father','Email ID of Father','Name of Mentor'
+    ]]);
+  }
   const props = PropertiesService.getScriptProperties();
   props.setProperty('SPREADSHEET_ID', CFG.SPREADSHEET_ID);
   if (!props.getProperty('ADMIN_PASSWORD')) {
@@ -132,7 +144,7 @@ function getMainSheet_() {
   const ss = SpreadsheetApp.openById(CFG.SPREADSHEET_ID);
   const skip = [CFG.FORMS_TAB,CFG.RESPONSES_TAB,CFG.LOGS_TAB];
   const sheet = ss.getSheets().find(s => skip.indexOf(s.getName()) < 0);
-  if (!sheet) throw new Error('Main student sheet not found.');
+  if (!sheet) throw new Error('No student-data tab found. Run setup() once in the spreadsheet-bound Apps Script project.');
   return sheet;
 }
 
