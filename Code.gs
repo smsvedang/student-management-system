@@ -76,7 +76,7 @@ function doPost(e) {
     const p = parsePost_(e);
     const action = String(p.action || '');
     if (action === 'login') result = login_(p.password);
-    else if (action === 'submitForm') result = submitForm_(p.formId, p.data || {});
+    else if (action === 'submitForm') result = submitForm_(p.formId || (p.data && p.data.__formId), p.data || {});
     else {
       requireSession_(p.token);
       result = adminAction_(p);
