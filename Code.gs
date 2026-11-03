@@ -59,6 +59,7 @@ function doGet(e) {
       if (cached) CacheService.getScriptCache().remove(key);
     }
     else if (action === 'publicForm') result = publicForm_(p.formId);
+    else if (action === 'lookupStudent') result = lookupStudent_(p.enrollment);
     else if (action === 'admin') {
       requireSession_(p.token);
       result = adminAction_(p);
@@ -131,6 +132,7 @@ function adminAction_(p) {
     case 'saveStudent': return saveStudent_(p.record || {});
     case 'deleteStudent': return deleteStudent_(Number(p.row));
     case 'listForms': return listForms_();
+    case 'formMeta': return formMeta_();
     case 'saveForm': return saveForm_(p.form || {});
     case 'deleteForm': return deleteForm_(p.formId);
     case 'responses': return getResponses_();
@@ -229,6 +231,26 @@ function deleteStudent_(row) {
   const sh=getMainSheet_(), hi=headerInfo_(sh);
   if (!row || row<=hi.row || row>sh.getLastRow()) throw new Error('Invalid student row.');
   sh.deleteRow(row); log_('DELETE_STUDENT','Row '+row,'admin'); return {ok:true};
+}
+
+function formMeta_() {
+  const hi = headerInfo_(getMainSheet_());
+  return {ok:true, columns:hi.headers.map(h=>h.name), identityColumn:findCol_(hi,'enrollment number|enrollment no') ? hi.headers.find(h=>h.col===findCol_(hi,'enrollment number|enrollment no')).name : ''};
+}
+
+function lookupStudent_(enrollment) {
+  const key = String(enrollment || '').trim().toLowerCase();
+  if (!key) throw new Error('Enter your enrollment number first.');
+  const sh = getMainSheet_(), hi = headerInfo_(sh);
+  const col = findCol_(hi,'enrollment number|enrollment no');
+  if (!col) throw new Error('Enrollment Number column is missing in the student sheet.');
+  const last = sh.getLastRow();
+  const rows = last > hi.row ? sh.getRange(hi.row+1,1,last-hi.row,sh.getLastColumn()).getDisplayValues() : [];
+  const idx = rows.findIndex(r => String(r[col-1] || '').trim().toLowerCase() === key);
+  if (idx < 0) throw new Error('Enrollment number not found. Please check it or contact your administrator.');
+  const record = {};
+  hi.headers.forEach(h => record[h.name] = rows[idx][h.col-1] || '');
+  return {ok:true,student:record};
 }
 
 function listForms_() {
