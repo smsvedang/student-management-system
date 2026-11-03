@@ -133,6 +133,7 @@ function adminAction_(p) {
     case 'deleteStudent': return deleteStudent_(Number(p.row));
     case 'listForms': return listForms_();
     case 'formMeta': return formMeta_();
+    case 'previewLookup': return previewLookup_(p.enrollment, p.columns || []);
     case 'saveForm': return saveForm_(p.form || {});
     case 'deleteForm': return deleteForm_(p.formId);
     case 'responses': return getResponses_();
@@ -236,6 +237,22 @@ function deleteStudent_(row) {
 function formMeta_() {
   const hi = headerInfo_(getMainSheet_());
   return {ok:true, columns:hi.headers.map(h=>h.name), identityColumn:findCol_(hi,'enrollment number|enrollment no') ? hi.headers.find(h=>h.col===findCol_(hi,'enrollment number|enrollment no')).name : ''};
+}
+
+function previewLookup_(enrollment, columns) {
+  const key = String(enrollment || '').trim().toLowerCase();
+  if (!key) throw new Error('Enter an Enrollment Number to preview verification.');
+  const allowed = Array.isArray(columns) ? columns.map(String) : [];
+  const sh = getMainSheet_(), hi = headerInfo_(sh);
+  const col = findCol_(hi,'enrollment number|enrollment no');
+  if (!col) throw new Error('Enrollment Number column is missing in the student sheet.');
+  const last = sh.getLastRow();
+  const rows = last > hi.row ? sh.getRange(hi.row+1,1,last-hi.row,sh.getLastColumn()).getDisplayValues() : [];
+  const idx = rows.findIndex(r => String(r[col-1] || '').trim().toLowerCase() === key);
+  if (idx < 0) throw new Error('Enrollment Number not found in the student database.');
+  const student = {};
+  hi.headers.forEach(h => { if (allowed.indexOf(h.name)>=0) student[h.name] = rows[idx][h.col-1] || ''; });
+  return {ok:true,student};
 }
 
 function lookupStudent_(enrollment, formId) {
