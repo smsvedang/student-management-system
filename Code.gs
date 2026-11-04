@@ -292,6 +292,13 @@ function saveForm_(form) {
   if (!title) throw new Error('Form title is required.');
   const fields=Array.isArray(form.fields)?form.fields:[];
   if (!fields.length) throw new Error('Add at least one field.');
+  // Treat the verification key as a dedicated system field, never as a sheet destination.
+  const explicitKeys=fields.filter(f=>f.lookupKey);
+  if (explicitKeys.length===0) {
+    const detected=fields.filter(f=>['enrollmentnumber','enrollmentno'].includes(norm_(f.label).replace(/[^a-z0-9]/g,'')));
+    if (detected.length===1) detected[0].lookupKey=true;
+  }
+  if (fields.filter(f=>f.lookupKey).length!==1) throw new Error('Mark exactly one field as the Enrollment Number verification field.');
   const config=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.FORMS_TAB);
   const id=form.id||Utilities.getUuid().slice(0,8);
   const main=getMainSheet_(), hi=headerInfo_(main);
@@ -304,7 +311,7 @@ function saveForm_(form) {
       }
       return;
     }
-    if (field.lookupKey) return; // Enrollment Number is only the identity key; it is never written back.
+    if (field.lookupKey || ['enrollmentnumber','enrollmentno'].includes(norm_(field.label).replace(/[^a-z0-9]/g,''))) { field.lookupKey=true; return; } // Verification-only field: never written to a destination column.
     const destination=String(field.targetColumn||'').trim();
     const target=hi.headers.find(h=>norm_(h.name)===norm_(destination));
     if (!target) throw new Error('Select an existing destination column for manual field: '+field.label);
