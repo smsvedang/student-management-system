@@ -830,29 +830,50 @@
       padding: 20px;
       z-index: 99;
       animation: fadeIn 0.2s ease;
+      overflow-y: auto;
     }
     .modal-box {
       background-color: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-xl);
-      width: min(720px, 100%);
-      max-height: 90vh;
+      width: min(760px, 100%);
+      max-height: min(88vh, 850px);
       display: flex;
       flex-direction: column;
       box-shadow: var(--shadow-xl);
       animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
+      position: relative;
     }
     .modal-header {
-      padding: 20px 24px;
+      padding: 18px 24px;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-shrink: 0;
+      background-color: var(--bg-surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .modal-body {
       padding: 24px;
       overflow-y: auto;
+      flex: 1 1 auto;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-default) transparent;
+    }
+    .modal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .modal-body::-webkit-scrollbar-thumb {
+      background-color: var(--border-default);
+      border-radius: 99px;
     }
     .modal-footer {
       padding: 16px 24px;
@@ -862,6 +883,10 @@
       justify-content: flex-end;
       gap: 10px;
       background-color: var(--bg-subtle);
+      flex-shrink: 0;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
     }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1264,9 +1289,9 @@
         </div>
         <button type="button" class="btn btn-secondary btn-sm" onclick="closeStudentModal()">✕</button>
       </div>
-      <form id="studentEditForm" onsubmit="handleSaveStudent(event)">
-        <div class="modal-body" id="studentFormFields" style="display: grid; gap: 14px;"></div>
-        <div class="modal-footer">
+      <form id="studentEditForm" onsubmit="handleSaveStudent(event)" style="display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; margin: 0;">
+        <div class="modal-body" id="studentFormFields" style="flex: 1 1 auto; overflow-y: auto; min-height: 0; padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; align-content: start;"></div>
+        <div class="modal-footer" style="flex-shrink: 0;">
           <button type="button" class="btn btn-secondary" onclick="closeStudentModal()">Cancel</button>
           <button type="submit" class="btn" id="btnSaveStudentSubmit">Save Student Record</button>
         </div>
@@ -2043,23 +2068,82 @@
     }
 
     // Student Add/Edit Modal
-    function openStudentModal(record = null) {
+    async function openStudentModal(record = null) {
       const isEdit = record && record._row;
       $('studentModalTitle').textContent = isEdit ? 'Edit Student Record' : 'Add New Student';
-      $('btnSaveStudentSubmit').textContent = isEdit ? 'Update Student' : 'Add Student';
+      $('btnSaveStudentSubmit').textContent = isEdit ? 'Update Student Record' : 'Save Student Record';
       
       const container = $('studentFormFields');
+      $('studentModal').classList.remove('hidden');
+
+      if (!studentHeaders || studentHeaders.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 36px 20px; color: var(--text-muted);">
+            <div class="status-pulse" style="display: inline-block; margin-bottom: 12px;"></div>
+            <div style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">Loading Spreadsheet Schema…</div>
+            <div style="font-size: 12px;">Detecting student database columns from live Google Sheet.</div>
+          </div>
+        `;
+
+        try {
+          const mRes = await adminApi('formMeta');
+          if (mRes && mRes.columns && mRes.columns.length) {
+            studentHeaders = mRes.columns;
+          } else {
+            const sRes = await adminApi('listStudents', { q: '' });
+            studentHeaders = sRes.headers || [];
+          }
+        } catch (err) {
+          container.innerHTML = `
+            <div class="badge badge-danger" style="grid-column: 1 / -1; padding: 12px; font-size: 13px; text-transform: none;">
+              Failed to load sheet fields: ${esc(err.message)}
+            </div>
+          `;
+          return;
+        }
+      }
+
       container.innerHTML = `
         <input type="hidden" name="_row" value="${isEdit ? record._row : ''}">
-        ${studentHeaders.map(h => `
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">${esc(h)}</label>
-            <input type="text" class="input" name="${esc(h)}" value="${esc(record ? (record[h] || '') : '')}">
-          </div>
-        `).join('')}
+        ${studentHeaders.map(h => {
+          const lower = h.toLowerCase();
+          const isEnrollment = lower.includes('enrollment');
+          const isName = lower.includes('name of student') || lower === 'name' || lower.includes('student name');
+          const isEmail = lower.includes('email');
+          const isPhone = lower.includes('mobile') || lower.includes('phone') || lower.includes('contact');
+          const isDate = lower.includes('date') || lower.includes('dob');
+          const isFullWidth = isEnrollment || isName;
+
+          const inputType = isEmail ? 'email' : (isPhone ? 'tel' : (isDate ? 'date' : 'text'));
+          const placeholder = isEnrollment ? 'e.g. 21001234 or EN1029' : (isEmail ? 'student@university.edu' : (isPhone ? 'e.g. 9876543210' : `Enter ${h}`));
+          const val = record ? (record[h] || '') : '';
+
+          return `
+            <div style="${isFullWidth ? 'grid-column: 1 / -1;' : ''}">
+              <div class="flex items-center justify-between" style="margin-bottom: 5px;">
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary);">
+                  ${esc(h)} ${isEnrollment ? '<span style="color:var(--danger)">*</span>' : ''}
+                </label>
+                ${isEnrollment ? '<span class="badge badge-primary" style="font-size: 9px; padding: 2px 7px;">Primary Identifier</span>' : ''}
+              </div>
+              <input 
+                type="${inputType}" 
+                class="input" 
+                name="${esc(h)}" 
+                value="${esc(val)}" 
+                placeholder="${esc(placeholder)}"
+                ${isEnrollment ? 'required style="font-weight:700; letter-spacing:0.5px;"' : ''}
+              >
+            </div>
+          `;
+        }).join('')}
       `;
 
-      $('studentModal').classList.remove('hidden');
+      // Focus first editable input
+      setTimeout(() => {
+        const firstInp = container.querySelector('input:not([type="hidden"])');
+        if (firstInp) firstInp.focus();
+      }, 100);
     }
 
     function closeStudentModal() {
@@ -2081,7 +2165,11 @@
         if (!res.ok) throw new Error(res.error || 'Failed to save student record');
         showToast('Student record saved successfully', 'success');
         closeStudentModal();
-        renderStudentsView();
+        if (currentPage === 'dashboard') {
+          renderDashboard();
+        } else {
+          renderStudentsView();
+        }
       } catch (err) {
         showToast(err.message, 'error');
       } finally {
