@@ -292,28 +292,30 @@ function saveForm_(form) {
   if (!title) throw new Error('Form title is required.');
   const fields=Array.isArray(form.fields)?form.fields:[];
   if (!fields.length) throw new Error('Add at least one field.');
-  const sh=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.FORMS_TAB);
+  const config=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.FORMS_TAB);
   const id=form.id||Utilities.getUuid().slice(0,8);
-  const main=getMainSheet_(), mainHi=headerInfo_(main);
+  const main=getMainSheet_(), hi=headerInfo_(main);
+  const enrollmentCol=findCol_(hi,'enrollment number|enrollment no');
+  const usedTargets=[];
   fields.forEach(field=>{
-    if (field.source === 'sheet') {
-      if (!field.sourceColumn || !mainHi.headers.some(h=>norm_(h.name)===norm_(field.sourceColumn))) {
-        throw new Error('Auto-fill source column not found in the student sheet: ' + (field.sourceColumn || field.label));
+    if (field.source==='sheet') {
+      if (!field.sourceColumn || !hi.headers.some(h=>norm_(h.name)===norm_(field.sourceColumn))) {
+        throw new Error('Auto-fill source column not found: '+(field.sourceColumn||field.label));
       }
-      // Auto-fill fields read existing data only; never create a destination column.
       return;
     }
-    // Only manual-entry fields need a destination column in the student sheet.
-    if (!mainHi.headers.some(h=>norm_(h.name)===norm_(field.label))) {
-      const added=ensureColumn_(main,mainHi,field.label);
-      mainHi.headers.push(added);
-    }
+    const destination=String(field.targetColumn||'').trim();
+    const target=hi.headers.find(h=>norm_(h.name)===norm_(destination));
+    if (!target) throw new Error('Select an existing destination column for manual field: '+field.label);
+    if (target.col===enrollmentCol) throw new Error('Enrollment Number is reserved for identity verification and cannot be a manual destination.');
+    if (usedTargets.indexOf(target.col)>=0) throw new Error('Each manual field must use a different destination column.');
+    usedTargets.push(target.col);
   });
-  const rows=sh.getLastRow()>1?sh.getRange(2,1,sh.getLastRow()-1,7).getValues():[];
+  const rows=config.getLastRow()>1?config.getRange(2,1,config.getLastRow()-1,7).getValues():[];
   const idx=rows.findIndex(r=>String(r[0])===String(id));
   const now=new Date();
   const row=[id,title,String(form.description||''),JSON.stringify(fields),form.published?'true':'false',idx>=0?rows[idx][5]:now,now];
-  if(idx>=0) sh.getRange(idx+2,1,1,7).setValues([row]); else sh.appendRow(row);
+  if(idx>=0) config.getRange(idx+2,1,1,7).setValues([row]); else config.appendRow(row);
   log_('SAVE_FORM',title,'admin');
   return {ok:true,id:id};
 }
@@ -335,15 +337,13 @@ function submitForm_(id,data) {
   const submittedEnroll=lookupField ? data[lookupField.key] : (data.enrollmentNumber || data.enrollment || '');
   if (!submittedEnroll) throw new Error('Enrollment Number is required for student verification.');
 
-  // Locate the existing student row. Public forms update this record; they never append a new student.
   const last=sh.getLastRow();
   const enrollments=last>hi.row?sh.getRange(hi.row+1,enrollCol,last-hi.row,1).getDisplayValues().flat():[];
   const matchIndex=enrollments.findIndex(v=>String(v||'').trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase());
   if (matchIndex<0) throw new Error('Enrollment number could not be verified.');
-  const target=hi.row+1+matchIndex;
+  const targetRow=hi.row+1+matchIndex;
   const responseSheet=SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.RESPONSES_TAB);
 
-  // Prevent duplicate submissions for the same form and enrollment.
   if (lookupField) {
     const prior=responseSheet.getLastRow()>1?responseSheet.getRange(2,1,responseSheet.getLastRow()-1,6).getDisplayValues():[];
     if (prior.some(r=>String(r[1])===String(id) && String(r[4]).trim().toLowerCase()===String(submittedEnroll).trim().toLowerCase())) {
@@ -352,32 +352,30 @@ function submitForm_(id,data) {
   }
 
   const student=lookupStudent_(submittedEnroll,id).student;
-  const manualValues={};
-  pub.fields.forEach(f=>{
-    if (f.source==='sheet') {
-      if (!f.sourceColumn || !Object.prototype.hasOwnProperty.call(student,f.sourceColumn)) {
-        throw new Error('Auto-fill source column is not available: '+(f.sourceColumn||f.label));
-      }
-      const v=student[f.sourceColumn]||'';
-      if (f.required && !String(v).trim()) throw new Error(f.label+' is required in the student database.');
-      return; // Keep existing sheet data unchanged.
-    }
-    const v=data[f.key];
-    if (f.required && (v===undefined || String(v).trim()==='')) throw new Error(f.label+' is required.');
-    manualValues[f.label]=v===undefined?'':v;
-  });
-
-  // Update only manually entered fields in the matched student's existing row.
   const latestHi=headerInfo_(sh);
-  Object.keys(manualValues).forEach(label=>{
-    let col=latestHi.headers.find(h=>norm_(h.name)===norm_(label));
-    if (!col) throw new Error('Destination column is missing for manual field: '+label+'. Save the form again to create it.');
-    sh.getRange(target,col.col).setValue(manualValues[label]);
+  const manualWrites=[];
+  pub.fields.forEach(field=>{
+    if (field.source==='sheet') {
+      if (!field.sourceColumn || !Object.prototype.hasOwnProperty.call(student,field.sourceColumn)) {
+        throw new Error('Auto-fill source column is not available: '+(field.sourceColumn||field.label));
+      }
+      const v=student[field.sourceColumn]||'';
+      if (field.required && !String(v).trim()) throw new Error(field.label+' is required in the student database.');
+      return; // Autofill is display-only; source values are not rewritten.
+    }
+    const v=data[field.key];
+    if (field.required && (v===undefined || String(v).trim()==='')) throw new Error(field.label+' is required.');
+    const destination=latestHi.headers.find(h=>norm_(h.name)===norm_(field.targetColumn||''));
+    if (!destination) throw new Error('Destination column is missing for manual field: '+field.label+'. Edit the form and select an existing sheet column.');
+    if (destination.col===enrollCol) throw new Error('Manual field cannot overwrite Enrollment Number.');
+    manualWrites.push({col:destination.col,value:v===undefined?'':v});
   });
 
-  responseSheet.appendRow([new Date(),id,pub.title,target,submittedEnroll,JSON.stringify(data)]);
+  // One write to the matched student's existing row only. No columns or student rows are created.
+  manualWrites.forEach(w=>sh.getRange(targetRow,w.col).setValue(w.value));
+  responseSheet.appendRow([new Date(),id,pub.title,targetRow,submittedEnroll,JSON.stringify(data)]);
   log_('PUBLIC_SUBMISSION',pub.title,'public');
-  return {ok:true,message:'Your information has been submitted and your student record has been updated.'};
+  return {ok:true,message:'Submitted successfully. Your existing student record has been updated.'};
 }
 
 function ensureColumn_(sh,hi,label) {
