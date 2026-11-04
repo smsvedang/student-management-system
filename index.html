@@ -1,49 +1,2933 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Student Management System</title>
-<style>
-:root{--ink:#17233b;--muted:#74819a;--line:#e6eaf2;--blue:#5267f5;--blue2:#394edb;--bg:#f5f7fc;--card:#fff;--nav:#111a31;--nav2:#1d2a4a;--green:#16865b;--amber:#a66a12;--red:#c43e4b}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:11px 16px;background:var(--blue);color:#fff;cursor:pointer;font-weight:700;transition:.18s ease}button:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 7px 18px #5267f52b}button.secondary{background:#eef1ff;color:#4055df}button.secondary:hover{background:#e1e6ff}button.danger{background:#fff0f1;color:var(--red)}button:disabled{opacity:.48;cursor:not-allowed;transform:none;box-shadow:none}
-.shell{display:flex;min-height:100vh}.side{width:258px;flex:0 0 258px;background:linear-gradient(165deg,var(--nav),var(--nav2));color:#fff;padding:27px 18px 20px;display:flex;flex-direction:column;gap:28px;box-shadow:8px 0 28px #15234712}.brand{font-size:21px;font-weight:850;letter-spacing:-.8px;padding:0 10px}.brand small{display:block;color:#aab6d1;font-size:10px;font-weight:700;letter-spacing:1.5px;margin-top:6px}.nav-label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#8493b4;padding:0 12px;margin-bottom:3px}.nav{display:grid;gap:6px}.nav button{background:transparent;color:#b7c2d9;text-align:left;padding:12px 13px;border-radius:11px;font-weight:600}.nav button.active,.nav button:hover{background:#ffffff17;color:#fff;box-shadow:inset 3px 0 #8b9bff;transform:none}.side-foot{margin-top:auto;border-top:1px solid #ffffff1c;padding-top:17px}.main{flex:1;min-width:0;padding:30px clamp(18px,3vw,46px);max-width:1700px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:27px;padding-bottom:19px;border-bottom:1px solid var(--line)}.top h1{margin:5px 0 0;font-size:29px;letter-spacing:-1.1px}.crumb{font-size:10px;color:#8a96ad;font-weight:800;letter-spacing:1.4px}.top-right{display:flex;align-items:center;gap:10px}.tag{display:inline-flex;align-items:center;gap:6px;border-radius:99px;background:#edf8f3;color:#187a55;padding:7px 11px;font-size:10px;font-weight:800;letter-spacing:.4px}.tag:before{content:"";width:6px;height:6px;border-radius:50%;background:#24a574}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;box-shadow:0 8px 28px #20345b08}.card{padding:21px}.panel{padding:23px;margin-bottom:18px}.metric{font-size:32px;font-weight:850;letter-spacing:-1.5px;margin-top:9px}.muted{color:var(--muted)}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row .grow{flex:1;min-width:160px}.section-kicker{font-size:10px;font-weight:850;letter-spacing:1.5px;color:#8591a8;text-transform:uppercase}.field{display:grid;gap:7px;margin:13px 0}.field label{font-size:12px;font-weight:750;color:#43516b}.field input,.field select,.field textarea,.search{width:100%;border:1px solid #dce2ee;border-radius:10px;padding:12px 13px;background:#fff;color:var(--ink);outline:none;transition:.15s}.field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:#8493ff;box-shadow:0 0 0 3px #5267f51a}.search{max-width:390px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:17px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);white-space:nowrap}th{background:#f8f9fd;color:#79859b;font-size:10px;text-transform:uppercase;letter-spacing:1px}tbody tr:hover{background:#fafbff}tbody tr:last-child td{border-bottom:0}td.actions{display:flex;gap:6px}.notice{padding:13px 15px;border-radius:11px;background:#eff3ff;color:#4054a0;margin:12px 0}.error{background:#fff0f1;color:#a52e3c}.hidden{display:none!important}.login{max-width:430px;margin:9vh auto;padding:34px}.login h1{margin:25px 0 5px;font-size:28px;letter-spacing:-1px}.login .field{margin:22px 0}.builder-step{border:1px solid var(--line);border-radius:15px;padding:19px;margin:14px 0;background:#fff}.fieldrow{display:grid;grid-template-columns:1.1fr .65fr .85fr .9fr .5fr auto;gap:9px;align-items:center;margin:10px 0;padding:13px;background:#f8f9fd;border:1px solid var(--line);border-radius:12px}.fieldrow input,.fieldrow select{width:100%;min-width:0;padding:10px;border:1px solid #dce2ee;border-radius:9px;background:#fff}.fieldrow label{font-size:11px;color:#53617a}.field-help{font-size:12px;color:var(--muted);margin-top:5px}.public{max-width:760px;margin:5vh auto;padding:24px}.public .panel{padding:30px}.modal-backdrop{position:fixed;inset:0;z-index:50;background:#101a32a8;display:flex;align-items:center;justify-content:center;padding:20px}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:25px;box-shadow:0 25px 80px #0b163c55}.preview-field{padding:10px 0;border-bottom:1px solid #eef0f5}.preview-field:last-child{border-bottom:0}.preview-field input{width:100%;padding:12px;border:1px solid #dce2ee;border-radius:10px}.pill-manual,.pill-auto{font-size:9px;font-weight:800;letter-spacing:.5px;padding:4px 7px;border-radius:99px}.pill-manual{background:#fff4e4;color:#95600d}.pill-auto{background:#eaf7f0;color:#18784e}
-@media(max-width:1000px){.side{width:220px;flex-basis:220px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fieldrow{grid-template-columns:1fr 1fr}}@media(max-width:650px){.shell{display:block}.side{width:auto;padding:15px;gap:13px}.brand{padding:0 5px}.nav-label{display:none}.nav{grid-template-columns:repeat(4,1fr);gap:4px}.nav button{text-align:center;padding:10px 4px;font-size:11px}.side-foot{display:none}.main{padding:17px 13px}.top h1{font-size:23px}.top{align-items:flex-start}.top-right .tag{display:none}.grid{gap:9px}.card{padding:14px}.metric{font-size:25px}.panel{padding:16px}.fieldrow{grid-template-columns:1fr 1fr}.modal{padding:18px}.login{margin:5vh 14px}}
-</style></head><body>
-<div id="loginView" class="login card"><div class="brand" style="color:#17233b">SMS <small>STUDENT MANAGEMENT SYSTEM</small></div><h1 style="margin-top:30px">Admin sign in</h1><p class="muted">Sign in to manage student records and forms.</p><div class="field"><label>Admin password</label><input id="password" type="password" autocomplete="current-password" placeholder="Enter admin password"></div><button style="width:100%" onclick="login()">Sign in</button><div id="loginMsg"></div></div>
-<div id="adminView" class="shell hidden"><aside class="side"><div class="brand">SMS <small>STUDENT MANAGEMENT</small></div><div><div class="nav-label">WORKSPACE</div><div class="nav"><button class="active" data-page="dashboard" onclick="page('dashboard',this)">◫ &nbsp; Dashboard</button><button data-page="students" onclick="page('students',this)">♙ &nbsp; Students</button><button data-page="forms" onclick="page('forms',this)">▤ &nbsp; Form Builder</button><button data-page="responses" onclick="page('responses',this)">☷ &nbsp; Responses</button></div></div><div class="side-foot"><button class="secondary" style="width:100%" onclick="logout()">Log out</button></div></aside><main class="main"><div class="top"><div><div class="crumb">ADMINISTRATION / <span id="crumb">DASHBOARD</span></div><h1 id="pageTitle">Dashboard</h1></div><div class="top-right"><span class="tag">CONNECTED WORKSPACE</span></div></div><div id="content"></div></main></div>
-<div id="publicView" class="public hidden"><div class="brand" style="color:#17233b">STUDENT INFORMATION PORTAL<small>SECURE FORM SUBMISSION</small></div><div class="panel" style="margin-top:22px"><h1 id="publicTitle">Loading form…</h1><p id="publicDesc" class="muted"></p><form id="publicForm" onsubmit="submitPublic(event)"></form><div id="publicMsg"></div></div></div>
-<div id="previewModal" class="modal-backdrop hidden" onclick="if(event.target===this)closePreview()"><div class="modal" id="previewContent"></div></div><iframe name="apiFrame" id="apiFrame" class="hidden"></iframe>
-<script>
-const API_URL='https://script.google.com/macros/s/AKfycbx6MOboyNMuEVpsa0vQiGBr3InLyE1cpEenxopBP_AYBMWscLmmxdKsxCCKGmQ8Dti1/exec';
-let token=sessionStorage.getItem('sms_token')||'', currentPage='dashboard', studentHeaders=[], forms=[], formMeta={columns:[],identityColumn:''}, activePublicFormId='';
-const $=id=>document.getElementById(id);
-function jsonp(params){return new Promise((resolve,reject)=>{const cb='smscb_'+Math.random().toString(36).slice(2);const s=document.createElement('script');const t=setTimeout(()=>{cleanup();reject(new Error('API request timed out'));},20000);function cleanup(){clearTimeout(t);delete window[cb];s.remove()}window[cb]=d=>{cleanup();resolve(d)};s.onerror=()=>{cleanup();reject(new Error('Could not connect to Apps Script'))};s.src=API_URL+'?'+new URLSearchParams({...params,callback:cb}).toString();document.body.appendChild(s)})}
-function post(payload){return new Promise((resolve,reject)=>{const nonce='n'+Math.random().toString(36).slice(2)+Date.now().toString(36);const frame=$('apiFrame');let done=false;const timer=setTimeout(()=>finish(new Error('Apps Script did not respond. Check deployment access and try again.')),30000);function finish(err,data){if(done)return;done=true;clearTimeout(timer);frame.removeEventListener('load',onload);if(err)reject(err);else resolve(data)}async function onload(){try{const result=await jsonp({action:'postResult',nonce});if(!result||result.pending)throw new Error('Waiting for Apps Script response');finish(null,result)}catch(err){if(!done){const retry=setTimeout(async()=>{try{const result=await jsonp({action:'postResult',nonce});if(result&&!result.pending)finish(null,result)}catch(e){}},1200);setTimeout(()=>clearTimeout(retry),1500)}}}frame.addEventListener('load',onload);const form=document.createElement('form');form.method='POST';form.action=API_URL;form.target='apiFrame';const input=document.createElement('input');input.name='payload';input.value=JSON.stringify(payload);const n=document.createElement('input');n.name='nonce';n.value=nonce;form.append(input,n);document.body.appendChild(form);form.submit();form.remove()})}
-async function login(){const msg=$('loginMsg');msg.textContent='';try{const r=await post({action:'login',password:$('password').value});if(!r.ok)throw Error(r.error);token=r.token;sessionStorage.setItem('sms_token',token);$('loginView').classList.add('hidden');$('adminView').classList.remove('hidden');page('dashboard')}catch(e){msg.className='notice error';msg.textContent=e.message}}
-async function logout(){try{await post({action:'logout',token})}catch(e){}token='';sessionStorage.removeItem('sms_token');$('adminView').classList.add('hidden');$('loginView').classList.remove('hidden')}
-async function admin(task,extra={}){const r=await jsonp({action:'admin',task,token,...extra});if(!r.ok)throw Error(r.error||'Request failed');return r}
-function page(name,btn){currentPage=name;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));$('crumb').textContent=name.toUpperCase();$('pageTitle').textContent=({dashboard:'Dashboard',students:'Student Database',forms:'Dynamic Form Builder',responses:'Form Responses'})[name];({dashboard:dashboard,students:students,forms:formBuilder,responses:responses}[name])().catch(showError)}
-function showError(e){$('content').innerHTML='<div class="notice error">'+esc(e.message)+'</div>'}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-async function dashboard(){const d=await admin('dashboard');$('content').innerHTML='<div class="grid"><div class="card"><div class="muted">Total students</div><div class="metric">'+d.total+'</div></div><div class="card"><div class="muted">Missing key details</div><div class="metric">'+d.missing+'</div></div><div class="card"><div class="muted">Active forms</div><div class="metric">'+d.forms+'</div></div><div class="card"><div class="muted">Detected columns</div><div class="metric">'+d.columns+'</div></div></div><div class="panel"><h3>Welcome to your student database</h3><p class="muted">Manage records, create shareable forms and review submissions. Your existing spreadsheet layout and spacer columns are retained.</p><button onclick="page(\'students\')">Manage students</button> <button class="secondary" onclick="page(\'forms\')">Create a form</button></div>'}
-async function students(q=''){const d=await admin('listStudents',{q});studentHeaders=d.headers;$('content').innerHTML='<div class="panel"><div class="row"><input id="studentSearch" class="search grow" placeholder="Search name, enrollment, mobile or email" value="'+esc(q)+'" onkeydown="if(event.key===\'Enter\')students(this.value)"><button onclick="studentEditor()">+ Add student</button><button class="secondary" onclick="downloadCsv()">Export CSV</button></div><div class="tablewrap" style="margin-top:15px"><table><thead><tr>'+d.headers.slice(0,7).map(h=>'<th>'+esc(h)+'</th>').join('')+'<th>Actions</th></tr></thead><tbody>'+d.records.map(r=>'<tr>'+d.headers.slice(0,7).map(h=>'<td>'+esc(r[h])+'</td>').join('')+'<td class="actions"><button class="secondary" onclick=\'studentEditor('+JSON.stringify(r).replace(/'/g,"&#39;")+')\'>Edit</button><button class="danger" onclick="removeStudent('+r._row+')">Delete</button></td></tr>').join('')+'</tbody></table></div><p class="muted">'+d.records.length+' records shown · table displays first 7 fields; edit opens all fields.</p></div>'}
-function studentEditor(record={}){const editing=!!record._row;$('content').innerHTML='<div class="panel"><div class="row"><h3 class="grow">'+(editing?'Edit student':'Add student')+'</h3><button class="secondary" onclick="students()">Back</button></div><form id="studentEdit" onsubmit="saveStudent(event)"><input type="hidden" name="_row" value="'+(record._row||'')+'">'+studentHeaders.map(h=>'<div class="field"><label>'+esc(h)+'</label><input name="'+esc(h)+'" value="'+esc(record[h]||'')+'"></div>').join('')+'<button>Save student</button></form></div>'}
-async function saveStudent(e){e.preventDefault();const obj=Object.fromEntries(new FormData(e.target));obj._row=Number(obj._row||0);try{const r=await post({action:'saveStudent',token,record:obj});if(!r.ok)throw Error(r.error);page('students')}catch(e){showError(e)}}
-async function removeStudent(row){if(!confirm('Delete this student record? This cannot be undone.'))return;try{const r=await post({action:'deleteStudent',token,row});if(!r.ok)throw Error(r.error);students()}catch(e){showError(e)}}
-async function downloadCsv(){try{const r=await admin('export');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([r.csv],{type:'text/csv'}));a.download=r.filename;a.click();URL.revokeObjectURL(a.href)}catch(e){showError(e)}}
-async function formBuilder(){const [d,m]=await Promise.all([admin('listForms'),admin('formMeta')]);forms=d.forms;formMeta=m;$('content').innerHTML='<div class="panel"><div class="row"><div class="grow"><div class="section-kicker">Form workspace</div><h2 style="margin:5px 0">Your forms</h2><p class="muted">Create verified forms with student details pulled directly from your sheet.</p></div><button onclick="editForm()">＋ Create form</button></div>'+forms.map(f=>'<div class="builder-step row"><div class="grow"><b>'+esc(f.title)+'</b><div class="muted" style="font-size:12px;margin-top:5px">'+f.fields.length+' fields · '+(f.published?'Published':'Draft')+' · '+(f.fields.some(x=>x.lookupKey)?'Enrollment verification enabled':'Manual entry')+'</div></div>'+(f.published?'<button class="secondary" onclick="copyLink(\''+f.id+'\')">Copy link</button>':'')+'<button class="secondary" onclick="editForm(\''+f.id+'\')">Edit</button><button class="danger" onclick="removeForm(\''+f.id+'\')">Delete</button></div>').join('')+'</div>'}
-function editForm(id){const f=forms.find(x=>x.id===id)||{title:'',description:'',fields:[],published:false};const cols=formMeta.columns||[];$('content').innerHTML='<div class="panel"><div class="row"><div class="grow"><div class="section-kicker">Form configuration</div><h2 style="margin:5px 0">'+(id?'Edit form':'Create a verified form')+'</h2><p class="muted">Choose what students enter and what the system fetches from the spreadsheet.</p></div><button class="secondary" onclick="formBuilder()">Back</button></div><div class="builder-step"><div class="field"><label>Form title</label><input id="formTitle" value="'+esc(f.title)+'" placeholder="e.g. Student Information Confirmation"></div><div class="field"><label>Instructions shown to students</label><textarea id="formDesc" rows="3" placeholder="Explain why this form is being collected">'+esc(f.description)+'</textarea></div></div><div class="builder-step"><div class="section-kicker">Step 1 · Identity verification</div><h3>Student confirmation key</h3><p class="muted">Enrollment Number will be checked against the student database before the form can be submitted.</p><span class="tag">Verification column: '+esc(formMeta.identityColumn||'Enrollment Number')+'</span></div><div class="builder-step"><div class="section-kicker">Step 2 · Form fields</div><p class="muted">For Auto-fill, select the existing source column. For Manual entry, select the existing destination column where the answer should be saved. No new sheet columns are created.</p><div id="fieldList">'+f.fields.map(fieldHtml).join('')+'</div><button class="secondary" onclick="addField()">＋ Add field</button></div><div class="builder-step"><div class="section-kicker">Step 3 · Publish</div><label style="display:block;margin:10px 0"><input type="checkbox" id="published" '+(f.published?'checked':'')+'> Publish form and enable public link</label><p class="field-help">Students must enter a valid Enrollment Number. Auto-filled details are fetched from the sheet; manually configured fields remain editable.</p><div class="row"><button class="secondary" type="button" onclick="previewForm()">Preview student experience</button><button onclick="saveForm(\''+(id||'')+'\')">Save form configuration</button></div></div></div>'}
-function fieldHtml(f={label:'',type:'text',required:true,source:'manual',sourceColumn:'',targetColumn:'',lookupKey:false}){const cols=formMeta.columns||[];return '<div class="fieldrow"><input class="f-label" placeholder="Student-facing field label" value="'+esc(f.label)+'"><select class="f-type"><option value="text" '+(f.type==='text'?'selected':'')+'>Text</option><option value="email" '+(f.type==='email'?'selected':'')+'>Email</option><option value="tel" '+(f.type==='tel'?'selected':'')+'>Mobile</option><option value="number" '+(f.type==='number'?'selected':'')+'>Number</option><option value="date" '+(f.type==='date'?'selected':'')+'>Date</option></select><select class="f-source" onchange="toggleFieldMapping(this)"><option value="manual" '+((f.source||'manual')==='manual'?'selected':'')+'>Manual entry</option><option value="sheet" '+(f.source==='sheet'?'selected':'')+'>Auto-fill from sheet</option></select><select class="f-column-wrap f-column" style="'+(f.source==='sheet'?'':'display:none')+'"><option value="">Select source column</option>'+cols.map(c=>'<option value="'+esc(c)+'" '+(f.sourceColumn===c?'selected':'')+'>'+esc(c)+'</option>').join('')+'</select><select class="f-target-wrap f-target" style="'+((f.source||'manual')==='manual'&&!f.lookupKey?'':'display:none')+'"><option value="">Save manual answer in…</option>'+cols.map(c=>'<option value="'+esc(c)+'" '+(f.targetColumn===c?'selected':'')+'>'+esc(c)+'</option>').join('')+'</select><label style="font-size:12px"><input class="f-required" type="checkbox" '+(f.required?'checked':'')+'> Required</label><button class="danger" type="button" onclick="this.parentElement.remove()">×</button><label style="grid-column:1/-1;font-size:12px;color:#4055df;font-weight:700"><input class="f-lookup" type="checkbox" '+(f.lookupKey?'checked':'')+' onchange="toggleVerificationField(this)"> Use only for Enrollment Number verification (not saved to a Sheet column)</label><div class="verification-note" style="grid-column:1/-1;display:'+(f.lookupKey?'block':'none')+';font-size:11px;color:#16865b">✓ System field: validates the existing student record. It is not a manual data destination.</div></div>'}
-function toggleFieldMapping(select){const row=select.parentElement;const sheet=select.value==='sheet';const verify=row.querySelector('.f-lookup').checked;row.querySelector('.f-column-wrap').style.display=sheet?'block':'none';row.querySelector('.f-target-wrap').style.display=!sheet&&!verify?'block':'none'}
-function toggleVerificationField(box){const row=box.parentElement.parentElement;const verify=box.checked;row.querySelector('.f-target-wrap').style.display=verify?'none':(row.querySelector('.f-source').value==='manual'?'block':'none');const note=row.querySelector('.verification-note');if(note)note.style.display=verify?'block':'none';if(verify){row.querySelector('.f-source').value='manual';row.querySelector('.f-column-wrap').style.display='none';row.querySelector('.f-target').value=''}}
-function collectBuilderFields(){return [...document.querySelectorAll('.fieldrow')].map((el,i)=>({label:el.querySelector('.f-label').value.trim(),key:'f'+i,type:el.querySelector('.f-type').value,source:el.querySelector('.f-source').value,sourceColumn:el.querySelector('.f-column').value,targetColumn:el.querySelector('.f-target').value,lookupKey:el.querySelector('.f-lookup').checked,required:el.querySelector('.f-required').checked})).filter(f=>f.label)}
-function closePreview(){$('previewModal').classList.add('hidden')}
-function previewForm(){const fields=collectBuilderFields();if(!fields.length){showError(new Error('Add at least one field before previewing.'));return}if(fields.filter(f=>f.lookupKey).length!==1){showError(new Error('Select exactly one Enrollment Number verification field before previewing.'));return}const title=$('formTitle').value.trim()||'Student Information Form';const desc=$('formDesc').value.trim();$('previewContent').innerHTML='<div class="row"><div class="grow"><div class="section-kicker">Live student preview</div><h2 style="margin:5px 0">'+esc(title)+'</h2><p class="muted">'+esc(desc)+'</p></div><button class="secondary" onclick="closePreview()">Close preview</button></div><div class="notice">Preview mode · No response will be submitted or saved. Enter a real Enrollment Number to test sheet verification and autofill.</div><form id="previewStudentForm" onsubmit="event.preventDefault();alert(\'Preview only — no data has been submitted.\')">'+fields.map(f=>'<div class="preview-field"><div class="row"><label style="font-weight:750">'+esc(f.label)+(f.required?' *':'')+'</label><span class="'+(f.source==='sheet'?'pill-auto':'pill-manual')+'">'+(f.source==='sheet'?'AUTO-FILL':'MANUAL')+'</span></div><input data-preview-key="'+esc(f.key)+'" type="'+esc(f.type)+'" '+(f.required?'required':'')+' '+(f.source==='sheet'?'readonly placeholder="Will fill after verification"':'')+(f.lookupKey?' placeholder="Enter your Enrollment Number"':'')+'></div>').join('')+'<div id="previewStatus" class="field-help" style="margin:14px 0"></div><button type="submit">Test form (preview only)</button></form>';$('previewModal').classList.remove('hidden');const key=fields.find(f=>f.lookupKey);const input=$('previewStudentForm').querySelector('[data-preview-key="'+key.key+'"]');input.addEventListener('change',()=>runPreviewLookup(fields,key));input.addEventListener('blur',()=>runPreviewLookup(fields,key))}
-async function runPreviewLookup(fields,key){const input=$('previewStudentForm').querySelector('[data-preview-key="'+key.key+'"]');const enrollment=input.value.trim();const status=$('previewStatus');if(!enrollment){status.textContent='Enter an Enrollment Number to verify.';return}status.textContent='Checking student database…';try{const columns=fields.filter(f=>f.source==='sheet').map(f=>f.sourceColumn);const r=await admin('previewLookup',{enrollment,columns});if(!r.ok)throw Error(r.error);fields.filter(f=>f.source==='sheet').forEach(f=>{const el=$('previewStudentForm').querySelector('[data-preview-key="'+f.key+'"]');if(el)el.value=r.student[f.sourceColumn]||''});status.className='notice';status.textContent='✓ Enrollment verified. Auto-filled fields have been populated from the live spreadsheet.'}catch(e){fields.filter(f=>f.source==='sheet').forEach(f=>{const el=$('previewStudentForm').querySelector('[data-preview-key="'+f.key+'"]');if(el)el.value=''});status.className='notice error';status.textContent=e.message}}
-async function saveForm(id){const fields=collectBuilderFields();let keys=fields.filter(f=>f.lookupKey);if(keys.length===0){const detected=fields.filter(f=>['enrollmentnumber','enrollmentno'].includes(f.label.toLowerCase().replace(/[^a-z0-9]/g,'')));if(detected.length===1){detected[0].lookupKey=true;keys=detected}}if(keys.length!==1){showError(new Error(keys.length>1?'Only one field can be used for Enrollment Number verification.':'Add a field named “Enrollment Number” (or “Enrollment No”) and mark it as the verification field.'));return}if(fields.some(f=>f.source==='sheet'&&!f.sourceColumn)){showError(new Error('Choose an existing source column for every auto-fill field.'));return}if(fields.some(f=>f.source!=='sheet'&&!f.lookupKey&&!f.targetColumn)){showError(new Error('Choose an existing destination column for every manual-entry field except the Enrollment Number verification field.'));return}try{const r=await post({action:'saveForm',token,form:{id,title:$('formTitle').value,description:$('formDesc').value,fields,published:$('published').checked}});if(!r.ok)throw Error(r.error);formBuilder()}catch(e){showError(e)}}
-async function removeForm(id){if(!confirm('Delete this form?'))return;try{const r=await post({action:'deleteForm',token,formId:id});if(!r.ok)throw Error(r.error);formBuilder()}catch(e){showError(e)}}
-function copyLink(id){const url=location.origin+location.pathname+'?form='+encodeURIComponent(id);navigator.clipboard.writeText(url).then(()=>alert('Form link copied:\n'+url)).catch(()=>prompt('Copy this form link',url))}
-async function responses(){const d=await admin('responses');$('content').innerHTML='<div class="panel"><h3>Recent submissions</h3><div class="tablewrap"><table><thead><tr>'+d.headers.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+d.rows.map(r=>'<tr>'+r.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></div>'}
-async function loadPublic(id){activePublicFormId=String(id||new URLSearchParams(location.search).get('form')||new URLSearchParams(location.search).get('formId')||'');$('loginView').classList.add('hidden');$('publicView').classList.remove('hidden');try{const r=await jsonp({action:'publicForm',formId:activePublicFormId});if(!r.ok)throw Error(r.error);const f=r.form;activePublicFormId=String(f.id||activePublicFormId);const key=f.fields.find(x=>x.lookupKey);$('publicTitle').textContent=f.title;$('publicDesc').textContent=f.description+ (key?' Enter your Enrollment Number first; your registered details will be verified and filled automatically.':'');$('publicForm').innerHTML=(key?'<div class="notice">Step 1: Enter your Enrollment Number and verify your student record.</div>':'')+f.fields.map(x=>'<div class="field" '+(x.source==='sheet'?'data-autofill="true"':'')+'><label>'+esc(x.label)+(x.required?' *':'')+(x.source==='sheet'?' · AUTO-FILLED':'')+'</label><input name="'+esc(x.key)+'" type="'+esc(x.type)+'" '+(x.required?'required':'')+' '+(x.source==='sheet'?'readonly placeholder="Filled after enrollment verification"':'')+(x.lookupKey?' autocomplete="off" placeholder="Enter your Enrollment Number"':'')+'></div>').join('')+'<div id="verifyStatus" class="field-help"></div><button id="publicSubmit" type="submit" '+(key?'disabled':'')+'>Submit information</button>';if(key){const input=$('publicForm').querySelector('[name="'+key.key+'"]');input.addEventListener('change',()=>verifyPublicStudent(f,key));input.addEventListener('blur',()=>verifyPublicStudent(f,key));}}catch(e){$('publicTitle').textContent='Form unavailable';$('publicMsg').textContent=e.message}}
-async function verifyPublicStudent(form,key){const input=$('publicForm').querySelector('[name="'+key.key+'"]');const enrollment=input.value.trim();const status=$('verifyStatus');const btn=$('publicSubmit');if(!enrollment){btn.disabled=true;return}status.textContent='Verifying enrollment number…';btn.disabled=true;try{const r=await jsonp({action:'lookupStudent',enrollment,formId:form.id});if(!r.ok)throw Error(r.error);const student=r.student;form.fields.filter(x=>x.source==='sheet').forEach(field=>{const el=$('publicForm').querySelector('[name="'+field.key+'"]');if(el)el.value=student[field.sourceColumn]||''});status.textContent='✓ Student verified. Registered details have been auto-filled. Complete the remaining fields.';status.className='notice';btn.disabled=false}catch(e){form.fields.filter(x=>x.source==='sheet').forEach(field=>{const el=$('publicForm').querySelector('[name="'+field.key+'"]');if(el)el.value=''});status.textContent=e.message;status.className='notice error';btn.disabled=true}}
-async function submitPublic(e){e.preventDefault();const id=activePublicFormId||e.target.dataset.formId||new URLSearchParams(location.search).get('form')||new URLSearchParams(location.search).get('formId')||'';const data=Object.fromEntries(new FormData(e.target));data.__formId=id;$('publicMsg').textContent='Submitting…';try{if(!id)throw Error('This form link is missing its form ID. Please reopen the original published form link.');const r=await post({action:'submitForm',formId:id,data});if(!r.ok)throw Error(r.error);$('publicForm').reset();$('publicMsg').className='notice';$('publicMsg').textContent=r.message}catch(err){$('publicMsg').className='notice error';$('publicMsg').textContent=err.message}}
-const formParams=new URLSearchParams(location.search);const formId=formParams.get('form')||formParams.get('formId');if(formId)loadPublic(formId);else if(token){$('loginView').classList.add('hidden');$('adminView').classList.remove('hidden');page('dashboard')}
-</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title id="seoTitle">Student Management System</title>
+  
+  <!-- SEO & Social Sharing Meta Tags (Dynamically updated for forms) -->
+  <meta name="description" id="seoDesc" content="Unified student information management portal, verified records lookup, and dynamic administrative forms.">
+  <meta name="keywords" content="student management, student records, institutional portal, student verification, academic form">
+  <meta name="author" content="Student Management System">
+  
+  <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Student Information Portal">
+  <meta property="og:title" id="ogTitle" content="Student Management System">
+  <meta property="og:description" id="ogDesc" content="Unified student information management portal, verified records lookup, and dynamic administrative forms.">
+  <meta property="og:url" id="ogUrl" content="">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="twTitle" content="Student Management System">
+  <meta name="twitter:description" id="twDesc" content="Unified student information management portal, verified records lookup, and dynamic administrative forms.">
+  
+  <meta name="theme-color" content="#3b82f6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      /* Light Palette */
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-inset: #f8fafc;
+      --border-subtle: #e2e8f0;
+      --border-default: #cbd5e1;
+      --border-focus: #3b82f6;
+      
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --text-inverse: #ffffff;
+      
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-subtle: #eff6ff;
+      --primary-border: #bfdbfe;
+      
+      --success: #059669;
+      --success-hover: #047857;
+      --success-subtle: #ecfdf5;
+      --success-border: #a7f3d0;
+      
+      --warning: #d97706;
+      --warning-subtle: #fffbeb;
+      --warning-border: #fde68a;
+      
+      --danger: #dc2626;
+      --danger-hover: #b91c1c;
+      --danger-subtle: #fef2f2;
+      --danger-border: #fecaca;
+      
+      --sidebar-bg: #0f172a;
+      --sidebar-card: #1e293b;
+      --sidebar-border: #334155;
+      --sidebar-text: #f8fafc;
+      --sidebar-muted: #94a3b8;
+      --sidebar-active: #3b82f6;
+      
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.06);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08);
+      --shadow-glow: 0 0 25px -5px rgba(37, 99, 235, 0.25);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 22px;
+      --radius-full: 9999px;
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #090d16;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1a2234;
+      --bg-subtle: #1f293d;
+      --bg-inset: #0b1120;
+      --border-subtle: #1e293b;
+      --border-default: #334155;
+      --border-focus: #60a5fa;
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-light: #64748b;
+      --text-inverse: #0f172a;
+      
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --primary-subtle: #1e293b;
+      --primary-border: #2563eb;
+      
+      --success: #10b981;
+      --success-hover: #34d399;
+      --success-subtle: #064e3b40;
+      --success-border: #059669;
+      
+      --warning: #f59e0b;
+      --warning-subtle: #78350f40;
+      --warning-border: #d97706;
+      
+      --danger: #ef4444;
+      --danger-hover: #f87171;
+      --danger-subtle: #7f1d1d40;
+      --danger-border: #dc2626;
+      
+      --sidebar-bg: #0b101d;
+      --sidebar-card: #131c2e;
+      --sidebar-border: #1e293b;
+      --sidebar-text: #f8fafc;
+      --sidebar-muted: #8493b2;
+      --sidebar-active: #3b82f6;
+      
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.7);
+      --shadow-glow: 0 0 35px -5px rgba(59, 130, 246, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 14px; }
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-body);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Common UI Elements */
+    a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background-color: var(--primary);
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      text-decoration: none;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .btn:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+    
+    .btn-secondary {
+      background-color: var(--bg-surface);
+      color: var(--text-primary);
+      border-color: var(--border-default);
+    }
+    .btn-secondary:hover { background-color: var(--bg-subtle); color: var(--primary); border-color: var(--primary-border); }
+    
+    .btn-outline {
+      background-color: transparent;
+      color: var(--primary);
+      border-color: var(--primary-border);
+    }
+    .btn-outline:hover { background-color: var(--primary-subtle); border-color: var(--primary); }
+    
+    .btn-danger {
+      background-color: var(--danger-subtle);
+      color: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .btn-danger:hover { background-color: var(--danger); color: #fff; }
+    
+    .btn-success {
+      background-color: var(--success);
+      color: #ffffff;
+    }
+    .btn-success:hover { background-color: var(--success-hover); }
+
+    .btn-sm { padding: 6px 11px; font-size: 12px; border-radius: var(--radius-sm); }
+    .btn-lg { padding: 13px 22px; font-size: 15px; border-radius: var(--radius-lg); }
+    .btn-icon { padding: 8px; border-radius: var(--radius-md); }
+
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 10px 14px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    .input:focus, .select:focus, .textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+    }
+    .input[readonly] {
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      cursor: default;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .badge-primary { background-color: var(--primary-subtle); color: var(--primary); border: 1px solid var(--primary-border); }
+    .badge-success { background-color: var(--success-subtle); color: var(--success); border: 1px solid var(--success-border); }
+    .badge-warning { background-color: var(--warning-subtle); color: var(--warning); border: 1px solid var(--warning-border); }
+    .badge-danger { background-color: var(--danger-subtle); color: var(--danger); border: 1px solid var(--danger-border); }
+    .badge-subtle { background-color: var(--bg-subtle); color: var(--text-muted); border: 1px solid var(--border-subtle); }
+
+    /* Layout Shells */
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .grow { flex-grow: 1; }
+
+    /* Admin Workspace */
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 275px;
+      flex-shrink: 0;
+      background-color: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--sidebar-border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 40;
+      transition: width 0.2s ease, transform 0.2s ease;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 18px;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      line-height: 1.2;
+    }
+    .brand-tag {
+      font-size: 10px;
+      color: var(--sidebar-muted);
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav {
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-grow: 1;
+    }
+    .nav-category {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--sidebar-muted);
+      padding: 12px 10px 6px;
+      text-transform: uppercase;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      color: var(--sidebar-muted);
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      text-align: left;
+      width: 100%;
+      transition: all 0.15s ease;
+    }
+    .nav-item:hover {
+      background-color: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      transform: none;
+      box-shadow: none;
+    }
+    .nav-item.active {
+      background-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    }
+    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .nav-count {
+      margin-left: auto;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 800;
+      background-color: rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-full);
+      color: inherit;
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sheet-status-box {
+      background-color: var(--sidebar-card);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+    }
+    .status-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Main Content Container */
+    .admin-main {
+      flex-grow: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-body);
+    }
+
+    .top-bar {
+      height: 68px;
+      padding: 0 32px;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(10px);
+    }
+    .breadcrumb-area {
+      display: flex;
+      flex-direction: column;
+    }
+    .breadcrumb {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quick-search-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quick-search-btn:hover {
+      border-color: var(--border-focus);
+      color: var(--text-primary);
+    }
+    .kbd-shortcut {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      background-color: var(--bg-surface);
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .content-area {
+      padding: 28px 32px 60px;
+      max-width: 1560px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Cards & Grids */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+    .stat-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-border);
+      transform: translateY(-2px);
+    }
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stat-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .stat-subtext {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .panel-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+    .panel-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-surface);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    table.data-table th {
+      background-color: var(--bg-subtle);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      white-space: nowrap;
+      user-select: none;
+    }
+    table.data-table th.sortable { cursor: pointer; }
+    table.data-table th.sortable:hover { color: var(--primary); }
+    table.data-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    table.data-table tbody tr:hover {
+      background-color: var(--bg-subtle);
+    }
+    table.data-table tbody tr:last-child td { border-bottom: none; }
+    
+    .cell-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s ease;
+    }
+    .cell-copy:hover {
+      background-color: var(--primary-subtle);
+      color: var(--primary);
+    }
+
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 4px 4px;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Form Builder Cards */
+    .form-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .form-item-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .form-item-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-border);
+      transform: translateY(-2px);
+    }
+    .form-item-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .form-item-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .form-item-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .form-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 14px;
+    }
+    .form-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Dynamic Field Builder Row */
+    .field-builder-row {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: auto 1.3fr 0.8fr 1fr 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .field-reorder {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .field-reorder button {
+      background: transparent;
+      border: none;
+      padding: 2px;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-radius: 4px;
+    }
+    .field-reorder button:hover { background-color: var(--bg-surface); color: var(--primary); }
+
+    /* Public Form View */
+    .public-container {
+      max-width: 780px;
+      margin: 40px auto;
+      padding: 0 20px 80px;
+    }
+    .public-brand-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .public-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--success);
+      background-color: var(--success-subtle);
+      border: 1px solid var(--success-border);
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+    }
+    
+    .public-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+      position: relative;
+    }
+    .public-hero {
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+    }
+    .public-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.9px;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .public-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .verification-card {
+      background: linear-gradient(145deg, var(--bg-subtle), var(--bg-surface));
+      border: 1px solid var(--primary-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .verification-card.verified {
+      border-color: var(--success-border);
+      background: linear-gradient(145deg, var(--success-subtle), var(--bg-surface));
+    }
+    .student-verified-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background-color: var(--success-subtle);
+      border: 1px solid var(--success-border);
+      color: var(--success);
+      font-weight: 700;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+
+    .verified-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .verified-detail-chip {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+    }
+    .verified-detail-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .verified-detail-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 2px;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 99;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-box {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      width: min(720px, 100%);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-xl);
+      animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background-color: var(--bg-subtle);
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleUp { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* Toast Notification Center */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      background-color: var(--bg-surface-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 280px;
+      max-width: 420px;
+      animation: slideInRight 0.25s ease;
+    }
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.error { border-left: 4px solid var(--danger); }
+    .toast.info { border-left: 4px solid var(--primary); }
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Print Styles for Form Receipts */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .admin-layout, .top-bar, .public-brand-bar, .no-print, button, .btn { display: none !important; }
+      .public-container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .public-card { border: 2px solid #000 !important; box-shadow: none !important; padding: 20px !important; }
+      .print-only { display: block !important; }
+    }
+    .print-only { display: none; }
+
+    /* Responsive Queries */
+    @media (max-width: 1024px) {
+      .sidebar { width: 240px; }
+      .field-builder-row { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .admin-layout { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: static; }
+      .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
+      .top-bar { padding: 0 16px; }
+      .content-area { padding: 20px 16px; }
+      .public-card { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Hidden iframe for Apps Script Post communication -->
+  <iframe name="apiFrame" id="apiFrame" class="hidden"></iframe>
+
+  <!-- ========================================== -->
+  <!-- 1. PUBLIC STUDENT FORM PORTAL VIEW        -->
+  <!-- ========================================== -->
+  <div id="publicView" class="public-container hidden">
+    <div class="public-brand-bar">
+      <div class="public-logo-wrap">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 15px; letter-spacing: -0.3px;">STUDENT INFORMATION PORTAL</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">INSTITUTIONAL RECORD VERIFICATION</div>
+        </div>
+      </div>
+      <div class="security-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>SECURE SSL FORM</span>
+      </div>
+    </div>
+
+    <div class="public-card" id="publicFormContainer">
+      <!-- Header Hero -->
+      <div class="public-hero">
+        <div class="badge badge-primary" style="margin-bottom: 10px;">Official Student Form</div>
+        <h1 class="public-title" id="publicTitle">Loading Form…</h1>
+        <p class="public-desc" id="publicDesc">Please wait while the form is securely retrieved from the institutional server.</p>
+      </div>
+
+      <!-- Verification Section -->
+      <div class="verification-card" id="publicVerificationBox">
+        <div class="flex items-center gap-3" style="margin-bottom: 12px;">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--primary-subtle); display:flex; align-items:center; justify-content:center; color:var(--primary);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 15px;">Step 1: Student Identity Verification</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Enter your official Enrollment Number to verify and load your academic records.</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2" style="margin-top: 14px;">
+          <input type="text" id="publicEnrollmentInput" class="input" placeholder="e.g. 21001234 or EN10293" style="font-weight: 600; font-size: 14px; text-transform: uppercase;">
+          <button type="button" class="btn" id="btnVerifyStudent" onclick="handlePublicVerification()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Verify Record
+          </button>
+        </div>
+        
+        <div id="verificationStatusText" style="margin-top: 10px; font-size: 12px;"></div>
+
+        <!-- Verified Student Card (revealed on successful lookup) -->
+        <div id="verifiedStudentDetailsCard" class="hidden">
+          <div class="student-verified-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>Record verified! Academic details locked and populated from spreadsheet.</span>
+          </div>
+          <div class="verified-details-grid" id="verifiedDetailsGrid"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Form Fields Form -->
+      <form id="publicSubmissionForm" onsubmit="handlePublicSubmit(event)">
+        <div id="publicFieldsContainer" style="display: grid; gap: 18px;"></div>
+        
+        <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div style="font-size: 12px; color: var(--text-muted);">
+            <span style="color:var(--danger)">*</span> Indicates mandatory fields required for confirmation.
+          </div>
+          <button type="submit" class="btn btn-lg" id="btnPublicSubmit" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Submit Information
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Public Submission Success / Printable Receipt Screen -->
+    <div id="publicSuccessScreen" class="public-card hidden" style="text-align: center; padding: 48px 36px;">
+      <div style="width: 68px; height: 68px; border-radius: 50%; background-color: var(--success-subtle); border: 2px solid var(--success-border); display:flex; align-items:center; justify-content:center; margin: 0 auto 20px; color: var(--success);">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2 style="font-size: 26px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 8px;">Submission Confirmed!</h2>
+      <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; font-size: 14px;" id="successMsgText">
+        Your response has been verified and recorded directly into the institutional spreadsheet database.
+      </p>
+
+      <div class="panel" style="text-align: left; max-width: 540px; margin: 0 auto 28px; background: var(--bg-subtle);">
+        <div style="font-weight: 800; font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.8px;">
+          Official Submission Receipt
+        </div>
+        <div style="display: grid; gap: 8px; font-size: 13px;" id="receiptDetails"></div>
+      </div>
+
+      <div class="flex gap-3 justify-between" style="max-width: 540px; margin: 0 auto;">
+        <button type="button" class="btn btn-secondary" onclick="window.print()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          Print Receipt
+        </button>
+        <button type="button" class="btn" onclick="resetPublicForm()">
+          Submit Another Response
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 2. ADMIN AUTHENTICATION VIEW               -->
+  <!-- ========================================== -->
+  <div id="loginView" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="panel" style="width: 100%; max-width: 440px; padding: 36px 32px; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);">
+      <div class="flex items-center gap-3" style="margin-bottom: 24px;">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 18px; letter-spacing: -0.4px;">SMS ADMIN</div>
+          <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; letter-spacing: 1px;">STUDENT MANAGEMENT SYSTEM</div>
+        </div>
+      </div>
+
+      <h2 style="font-size: 22px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 6px;">Sign in to Workspace</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Enter your administrative security password to access records and forms.</p>
+
+      <form onsubmit="handleLogin(event)">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px;">Admin Master Password</label>
+          <div style="position: relative;">
+            <input type="password" id="adminPasswordInput" class="input" placeholder="••••••••••••" required autocomplete="current-password" style="padding-right: 40px;">
+            <button type="button" onclick="togglePasswordVisibility('adminPasswordInput')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; padding:4px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn" id="btnLoginSubmit" style="width: 100%; padding: 12px; font-size: 14px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Sign In to Admin Panel
+        </button>
+      </form>
+      
+      <div id="loginErrorMsg" style="margin-top: 14px; font-size: 12px;"></div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 3. ADMIN WORKSPACE SHELL                   -->
+  <!-- ========================================== -->
+  <div id="adminView" class="admin-layout hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name">SMS PORTAL</div>
+            <div class="brand-tag">ADMIN SUITE v2.0</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-category">Core Modules</div>
+        <button class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-page="students" onclick="navigate('students')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Student Directory</span>
+          <span class="nav-count" id="sidebarStudentCount">0</span>
+        </button>
+
+        <button class="nav-item" data-page="forms" onclick="navigate('forms')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span>Form Builder</span>
+          <span class="nav-count" id="sidebarFormCount">0</span>
+        </button>
+
+        <button class="nav-item" data-page="responses" onclick="navigate('responses')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+            <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+          </svg>
+          <span>Submissions</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sheet-status-box">
+          <div class="status-pulse"></div>
+          <div style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis;">
+            <div style="font-weight: 700; color: #fff;">Sheet Database</div>
+            <a href="https://docs.google.com/spreadsheets/d/1ZnzqvJqoWTOzJ6mD25yl_YO_UzUcmP9mU6xUOa5oDlM/edit" target="_blank" style="color: #60a5fa; font-size: 10px;">Open in Google Sheets ↗</a>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-secondary" onclick="handleLogout()" style="width: 100%; border-color: var(--sidebar-border); color: #fff; background: rgba(255,255,255,0.05);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <header class="top-bar">
+        <div class="breadcrumb-area">
+          <div class="breadcrumb">ADMINISTRATION / <span id="currentCrumb">DASHBOARD</span></div>
+          <h1 class="page-title" id="pageHeading">Dashboard</h1>
+        </div>
+
+        <div class="top-actions">
+          <button type="button" class="quick-search-btn" onclick="openCommandPalette()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <span>Quick search…</span>
+            <span class="kbd-shortcut">Ctrl+K</span>
+          </button>
+
+          <button type="button" class="btn btn-secondary btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Theme">
+            <svg id="themeIconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </button>
+
+          <button type="button" class="btn btn-sm" onclick="openStudentModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            + Add Student
+          </button>
+        </div>
+      </header>
+
+      <div class="content-area" id="adminContent">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </main>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 4. MODALS & DRAWERS                        -->
+  <!-- ========================================== -->
+
+  <!-- Student Record Editor Modal (Add / Edit) -->
+  <div id="studentModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeStudentModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 800;" id="studentModalTitle">Student Record</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Manage student identity, enrollment, and contact fields.</p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeStudentModal()">✕</button>
+      </div>
+      <form id="studentEditForm" onsubmit="handleSaveStudent(event)">
+        <div class="modal-body" id="studentFormFields" style="display: grid; gap: 14px;"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeStudentModal()">Cancel</button>
+          <button type="submit" class="btn" id="btnSaveStudentSubmit">Save Student Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Student Detailed Inspector Modal -->
+  <div id="studentDetailModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeStudentDetailModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 800;" id="detailStudentName">Student Profile</h3>
+          <p style="font-size: 12px; color: var(--text-muted);" id="detailStudentMeta">Complete sheet data breakdown</p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeStudentDetailModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;" id="detailStudentGrid"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeStudentDetailModal()">Close</button>
+        <button type="button" class="btn" id="btnEditFromDetail">Edit Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Builder Modal (Add / Edit Form) -->
+  <div id="formBuilderModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeFormBuilderModal()">
+    <div class="modal-box" style="width: min(880px, 100%);">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 800;" id="formBuilderModalTitle">Form Designer</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Configure public fields, sheet auto-fill, and enrollment verification.</p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeFormBuilderModal()">✕</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Form Settings -->
+        <div class="panel" style="padding: 16px; margin: 0; background: var(--bg-subtle);">
+          <div style="font-weight: 800; font-size: 13px; margin-bottom: 12px; color: var(--primary);">
+            STEP 1 · Form Information & SEO
+          </div>
+          <div style="display: grid; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">Form Title (Also used for SEO Page Title & OpenGraph)</label>
+              <input type="text" id="fbFormTitle" class="input" placeholder="e.g. Student Annual Contact & Identity Verification" required>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">Student Instructions / Description</label>
+              <textarea id="fbFormDesc" class="textarea" rows="2" placeholder="Briefly guide students on why and how to fill this form…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Key Info -->
+        <div class="panel" style="padding: 16px; margin: 0; background: var(--bg-subtle);">
+          <div style="font-weight: 800; font-size: 13px; margin-bottom: 8px; color: var(--primary);">
+            STEP 2 · Identity Verification System
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+            Exactly ONE field must be marked as the <strong>Enrollment Verification Key</strong>. When a student enters their enrollment number, their existing record is verified and auto-filled from the live spreadsheet.
+          </p>
+          <div class="badge badge-success" id="fbIdentityColBadge">Identity Column: Enrollment Number</div>
+        </div>
+
+        <!-- Fields List -->
+        <div>
+          <div class="flex items-center justify-between" style="margin-bottom: 12px;">
+            <div>
+              <div style="font-weight: 800; font-size: 14px;">STEP 3 · Form Fields Manager</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Add manual inputs or auto-fill fields pulled directly from sheet columns.</div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline" onclick="addBuilderField()">+ Add Field</button>
+          </div>
+          
+          <div id="fbFieldsList"></div>
+        </div>
+
+        <!-- Publish Toggle -->
+        <div class="flex items-center justify-between panel" style="padding: 14px 18px; margin: 0; background: var(--bg-subtle);">
+          <div>
+            <div style="font-weight: 700; font-size: 13px;">Publish Status</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Make this form accessible to students via shareable public link.</div>
+          </div>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; font-size: 13px;">
+            <input type="checkbox" id="fbPublishedCheckbox" style="width: 18px; height: 18px; accent-color: var(--primary);">
+            Published & Active
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeFormBuilderModal()">Cancel</button>
+        <button type="button" class="btn btn-outline" onclick="previewCurrentForm()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Live Student Preview
+        </button>
+        <button type="button" class="btn" id="btnSaveFormSubmit" onclick="handleSaveForm()">Save Form Configuration</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Form Preview Modal -->
+  <div id="previewModal" class="modal-backdrop hidden" onclick="if(event.target===this)closePreviewModal()">
+    <div class="modal-box" style="width: min(760px, 100%);">
+      <div class="modal-header">
+        <div>
+          <div class="badge badge-primary" style="margin-bottom: 4px;">Live Preview Mode</div>
+          <h3 style="font-size: 18px; font-weight: 800;" id="previewModalTitle">Student Experience Preview</h3>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closePreviewModal()">✕</button>
+      </div>
+      <div class="modal-body" id="previewModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closePreviewModal()">Close Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Modal for Form Sharing -->
+  <div id="qrModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeQrModal()">
+    <div class="modal-box" style="max-width: 420px; text-align: center;">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; font-weight: 800;">Scan Form QR Code</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeQrModal()">✕</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <div id="qrCodeImageWrap" style="background:#fff; padding:16px; border-radius:12px; box-shadow:var(--shadow-sm); border:1px solid var(--border-subtle);"></div>
+        <div>
+          <div style="font-weight: 800; font-size: 15px;" id="qrFormTitle">Student Form</div>
+          <div style="font-size: 12px; color: var(--text-muted); word-break: break-all; margin-top: 4px;" id="qrFormUrl"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="copyCurrentQrUrl()">Copy Link</button>
+        <button type="button" class="btn btn-sm" onclick="closeQrModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submission Inspector Modal -->
+  <div id="responseDetailModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeResponseDetailModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 17px; font-weight: 800;">Submission Payload Inspection</h3>
+          <p style="font-size: 12px; color: var(--text-muted);" id="responseDetailMeta"></p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeResponseDetailModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; gap: 10px;" id="responseDetailContent"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeResponseDetailModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Command Palette Modal (Ctrl+K) -->
+  <div id="cmdPaletteModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeCommandPalette()">
+    <div class="modal-box" style="max-width: 560px; padding: 0; overflow: hidden;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); display:flex; align-items:center; gap: 12px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted)">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="cmdInput" placeholder="Type a command or student name…" style="border:none; outline:none; background:transparent; font-size:15px; width:100%; color:var(--text-primary);" oninput="handleCmdSearch(this.value)">
+        <span class="kbd-shortcut">ESC</span>
+      </div>
+      <div style="max-height: 340px; overflow-y: auto; padding: 10px;" id="cmdResultsList"></div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 5. JAVASCRIPT CORE SYSTEM                  -->
+  <!-- ========================================== -->
+  <script>
+    // System Configurations
+    const API_URL = 'https://script.google.com/macros/s/AKfycbx6MOboyNMuEVpsa0vQiGBr3InLyE1cpEenxopBP_AYBMWscLmmxdKsxCCKGmQ8Dti1/exec';
+    
+    // Application State
+    let authToken = sessionStorage.getItem('sms_token') || '';
+    let currentPage = 'dashboard';
+    let studentHeaders = [];
+    let studentRecords = [];
+    let formsList = [];
+    let formMetadata = { columns: [], identityColumn: 'Enrollment Number' };
+    let activePublicForm = null;
+    let verifiedStudentData = null;
+    let editingFormId = null;
+    let currentTheme = localStorage.getItem('sms_theme') || 'light';
+    
+    // Pagination & Filter States
+    let studentSearchQuery = '';
+    let studentSortColumn = '';
+    let studentSortAsc = true;
+    let studentCurrentPage = 1;
+    let studentPageSize = 25;
+    
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    // Initialize Theme
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+    // ==========================================
+    // SEO & META TAG DYNAMIC UPDATES
+    // ==========================================
+    function updateSeo(title, description = '') {
+      const siteName = 'Student Management Portal';
+      const cleanTitle = title ? `${title} | ${siteName}` : 'Student Management System';
+      const cleanDesc = description || 'Unified student records database, verified identity lookup, and dynamic administrative forms.';
+
+      document.title = cleanTitle;
+      const seoTitleEl = $('seoTitle');
+      if (seoTitleEl) seoTitleEl.textContent = cleanTitle;
+
+      const setMeta = (selector, attr, val) => {
+        let el = document.querySelector(selector);
+        if (el) el.setAttribute(attr, val);
+      };
+
+      setMeta('#seoDesc', 'content', cleanDesc);
+      setMeta('#ogTitle', 'content', cleanTitle);
+      setMeta('#ogDesc', 'content', cleanDesc);
+      setMeta('#ogUrl', 'content', window.location.href);
+      setMeta('#twTitle', 'content', cleanTitle);
+      setMeta('#twDesc', 'content', cleanDesc);
+    }
+
+    // Toast Notifications
+    function showToast(message, type = 'info') {
+      const container = $('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+        error: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+        info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+      };
+
+      toast.innerHTML = `${icons[type] || icons.info}<span>${esc(message)}</span>`;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 250);
+      }, 4000);
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('sms_theme', currentTheme);
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      showToast(`Switched to ${currentTheme} mode`, 'info');
+    }
+
+    // ==========================================
+    // API COMMUNICATION (JSONP & NONCE POST)
+    // ==========================================
+    function jsonp(params) {
+      return new Promise((resolve, reject) => {
+        const cb = 'smscb_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        const script = document.createElement('script');
+        let timer = setTimeout(() => {
+          cleanup();
+          reject(new Error('Connection timed out (25s). Please check network or Apps Script service.'));
+        }, 25000);
+
+        function cleanup() {
+          clearTimeout(timer);
+          delete window[cb];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[cb] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error('Network error: Unable to contact Google Apps Script Web App.'));
+        };
+
+        const urlParams = new URLSearchParams();
+        for (const k in params) {
+          if (params[k] !== undefined && params[k] !== null) {
+            urlParams.append(k, typeof params[k] === 'object' ? JSON.stringify(params[k]) : params[k]);
+          }
+        }
+        urlParams.append('callback', cb);
+        script.src = API_URL + '?' + urlParams.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function post(payload) {
+      return new Promise((resolve, reject) => {
+        const nonce = 'n' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        const frame = $('apiFrame');
+        let done = false;
+
+        const timeoutTimer = setTimeout(() => {
+          finish(new Error('Operation timed out waiting for Google Apps Script response.'));
+        }, 35000);
+
+        function finish(err, res) {
+          if (done) return;
+          done = true;
+          clearTimeout(timeoutTimer);
+          frame.removeEventListener('load', onLoad);
+          if (err) reject(err);
+          else resolve(res);
+        }
+
+        async function pollResult(retries = 5, delay = 800) {
+          if (done) return;
+          try {
+            const res = await jsonp({ action: 'postResult', nonce });
+            if (res && !res.pending) {
+              finish(null, res);
+              return;
+            }
+          } catch (_) {}
+          if (retries > 0 && !done) {
+            setTimeout(() => pollResult(retries - 1, Math.min(delay * 1.5, 3000)), delay);
+          }
+        }
+
+        function onLoad() {
+          setTimeout(() => pollResult(6, 600), 400);
+        }
+
+        frame.addEventListener('load', onLoad);
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = API_URL;
+        form.target = 'apiFrame';
+
+        const payloadInput = document.createElement('input');
+        payloadInput.name = 'payload';
+        payloadInput.value = JSON.stringify(payload);
+
+        const nonceInput = document.createElement('input');
+        nonceInput.name = 'nonce';
+        nonceInput.value = nonce;
+
+        form.appendChild(payloadInput);
+        form.appendChild(nonceInput);
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+
+        // Also initiate an optimistic poll after 1.8s
+        setTimeout(() => { if (!done) pollResult(5, 1000); }, 1800);
+      });
+    }
+
+    async function adminApi(task, extra = {}) {
+      const res = await jsonp({ action: 'admin', task, token: authToken, ...extra });
+      if (!res.ok) {
+        if (res.error && res.error.includes('Session expired')) {
+          handleLogout();
+        }
+        throw new Error(res.error || 'Server operation failed');
+      }
+      return res;
+    }
+
+    // ==========================================
+    // AUTHENTICATION
+    // ==========================================
+    function togglePasswordVisibility(id) {
+      const input = $(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const pwd = $('adminPasswordInput').value;
+      const btn = $('btnLoginSubmit');
+      const errBox = $('loginErrorMsg');
+      
+      btn.disabled = true;
+      btn.innerHTML = 'Verifying Password…';
+      errBox.innerHTML = '';
+
+      try {
+        const res = await post({ action: 'login', password: pwd });
+        if (!res.ok) throw new Error(res.error || 'Invalid administrator password.');
+        
+        authToken = res.token;
+        sessionStorage.setItem('sms_token', authToken);
+        showToast('Signed in successfully', 'success');
+        
+        $('loginView').classList.add('hidden');
+        $('adminView').classList.remove('hidden');
+        navigate('dashboard');
+      } catch (err) {
+        errBox.innerHTML = `<div class="badge badge-danger" style="width:100%; justify-content:center; padding:8px;">${esc(err.message)}</div>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In to Admin Panel';
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        if (authToken) await post({ action: 'logout', token: authToken });
+      } catch (_) {}
+      authToken = '';
+      sessionStorage.removeItem('sms_token');
+      $('adminView').classList.add('hidden');
+      $('loginView').classList.remove('hidden');
+      updateSeo('Admin Sign In');
+      showToast('Signed out of admin session', 'info');
+    }
+
+    // ==========================================
+    // ROUTING & ADMIN NAVIGATION
+    // ==========================================
+    function navigate(pageName) {
+      currentPage = pageName;
+      document.querySelectorAll('.sidebar-nav .nav-item').forEach(b => {
+        b.classList.toggle('active', b.dataset.page === pageName);
+      });
+
+      const pageTitles = {
+        dashboard: 'Dashboard',
+        students: 'Student Directory',
+        forms: 'Dynamic Form Builder',
+        responses: 'Submissions Explorer'
+      };
+
+      const title = pageTitles[pageName] || 'Admin Portal';
+      $('pageHeading').textContent = title;
+      $('currentCrumb').textContent = pageName.toUpperCase();
+      updateSeo(title);
+
+      const renderers = {
+        dashboard: renderDashboard,
+        students: renderStudentsView,
+        forms: renderFormsView,
+        responses: renderResponsesView
+      };
+
+      if (renderers[pageName]) {
+        $('adminContent').innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);">Loading workspace data…</div>';
+        renderers[pageName]().catch(err => {
+          $('adminContent').innerHTML = `<div class="panel" style="border-color: var(--danger-border); background: var(--danger-subtle); color: var(--danger);"><strong>Error loading view:</strong> ${esc(err.message)}</div>`;
+          showToast(err.message, 'error');
+        });
+      }
+    }
+
+    // ==========================================
+    // DASHBOARD VIEW
+    // ==========================================
+    async function renderDashboard() {
+      const data = await adminApi('dashboard');
+      $('sidebarStudentCount').textContent = data.total;
+      $('sidebarFormCount').textContent = data.forms;
+
+      $('adminContent').innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Total Students</span>
+              <div class="stat-icon" style="background: var(--primary-subtle); color: var(--primary);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">${data.total}</div>
+            <div class="stat-subtext">Active student records in main tab</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Incomplete Profiles</span>
+              <div class="stat-icon" style="background: var(--warning-subtle); color: var(--warning);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">${data.missing}</div>
+            <div class="stat-subtext">Missing name or enrollment number</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Active Forms</span>
+              <div class="stat-icon" style="background: var(--success-subtle); color: var(--success);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">${data.forms}</div>
+            <div class="stat-subtext">Configured institutional forms</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Detected Columns</span>
+              <div class="stat-icon" style="background: var(--bg-subtle); color: var(--text-muted);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="12" y1="3" x2="12" y2="21"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">${data.columns}</div>
+            <div class="stat-subtext">Header row index: ${data.headerRow}</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">Quick Operations</h3>
+                <p class="panel-desc">Manage student database, generate forms, or export CSV.</p>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <button class="btn btn-secondary" onclick="navigate('students')" style="padding: 16px; justify-content: flex-start;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <div style="text-align: left;">
+                  <div style="font-weight: 700;">Search Students</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Filter records & edit details</div>
+                </div>
+              </button>
+
+              <button class="btn btn-secondary" onclick="openStudentModal()" style="padding: 16px; justify-content: flex-start;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <div style="text-align: left;">
+                  <div style="font-weight: 700;">Add Student</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Create a new record in sheet</div>
+                </div>
+              </button>
+
+              <button class="btn btn-secondary" onclick="openFormBuilderModal()" style="padding: 16px; justify-content: flex-start;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <div style="text-align: left;">
+                  <div style="font-weight: 700;">New Verified Form</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Build shareable student form</div>
+                </div>
+              </button>
+
+              <button class="btn btn-secondary" onclick="exportStudentsCsv()" style="padding: 16px; justify-content: flex-start;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <div style="text-align: left;">
+                  <div style="font-weight: 700;">Download CSV</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Export all student records</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Spreadsheet Health</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+              <div>
+                <div class="flex justify-between" style="margin-bottom: 4px;">
+                  <span style="color: var(--text-muted);">Data Completeness</span>
+                  <span style="font-weight: 700;">${data.total ? Math.round(((data.total - data.missing) / data.total) * 100) : 100}%</span>
+                </div>
+                <div style="height: 6px; background: var(--bg-subtle); border-radius: 99px; overflow: hidden;">
+                  <div style="height: 100%; width: ${data.total ? Math.round(((data.total - data.missing) / data.total) * 100) : 100}%; background: var(--success); border-radius: 99px;"></div>
+                </div>
+              </div>
+              
+              <div style="padding-top: 10px; border-top: 1px solid var(--border-subtle); font-size: 12px; color: var(--text-muted);">
+                <p>✓ First non-system tab is locked as primary student directory.</p>
+                <p style="margin-top: 6px;">✓ Spacer columns and custom layout formatting are safely preserved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // STUDENT DIRECTORY VIEW
+    // ==========================================
+    async function renderStudentsView() {
+      const res = await adminApi('listStudents', { q: studentSearchQuery });
+      studentHeaders = res.headers || [];
+      studentRecords = res.records || [];
+      $('sidebarStudentCount').textContent = studentRecords.length;
+
+      // Filter & Sort
+      let filtered = [...studentRecords];
+      if (studentSortColumn) {
+        filtered.sort((a, b) => {
+          const valA = String(a[studentSortColumn] || '').toLowerCase();
+          const valB = String(b[studentSortColumn] || '').toLowerCase();
+          return studentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+      }
+
+      const totalItems = filtered.length;
+      const totalPages = Math.ceil(totalItems / studentPageSize) || 1;
+      studentCurrentPage = Math.min(studentCurrentPage, totalPages);
+      const startIdx = (studentCurrentPage - 1) * studentPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + studentPageSize);
+
+      const displayCols = studentHeaders.slice(0, 6);
+
+      $('adminContent').innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3 class="panel-title">Student Records Database</h3>
+              <p class="panel-desc">Showing ${totalItems} records. Click any field to inspect or copy.</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-secondary btn-sm" onclick="exportStudentsCsv()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Export CSV
+              </button>
+              <button class="btn btn-sm" onclick="openStudentModal()">+ Add Student</button>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="flex gap-3" style="margin-bottom: 18px;">
+            <div style="position: relative; flex-grow: 1; max-width: 480px;">
+              <input type="text" class="input" placeholder="Search by name, enrollment number, mobile, email…" value="${esc(studentSearchQuery)}" oninput="debounceStudentSearch(this.value)" style="padding-left: 36px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  ${displayCols.map(h => `
+                    <th class="sortable" onclick="sortStudentColumn('${esc(h)}')">
+                      ${esc(h)} ${studentSortColumn === h ? (studentSortAsc ? '▲' : '▼') : ''}
+                    </th>
+                  `).join('')}
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${pageItems.length === 0 ? `
+                  <tr><td colspan="${displayCols.length + 2}" style="text-align: center; padding: 36px; color: var(--text-muted);">No student records matched your search.</td></tr>
+                ` : pageItems.map((r, i) => `
+                  <tr>
+                    <td style="color: var(--text-muted); font-size: 11px;">${startIdx + i + 1}</td>
+                    ${displayCols.map(h => `
+                      <td>
+                        <span class="cell-copy" onclick="copyCellText('${esc(r[h] || '')}')" title="Click to copy">
+                          ${esc(r[h] || '—')}
+                        </span>
+                      </td>
+                    `).join('')}
+                    <td style="text-align: right;">
+                      <div class="flex gap-2" style="justify-content: flex-end;">
+                        <button class="btn btn-secondary btn-sm" onclick='openStudentDetailModal(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Inspect</button>
+                        <button class="btn btn-secondary btn-sm" onclick='openStudentModal(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="handleDeleteStudent(${r._row}, '${esc(r['Name of Student'] || r['Enrollment Number'] || 'Row ' + r._row)}')">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-bar">
+            <div>Showing ${totalItems ? startIdx + 1 : 0} to ${Math.min(startIdx + studentPageSize, totalItems)} of ${totalItems} students</div>
+            <div class="flex gap-2 items-center">
+              <button class="btn btn-secondary btn-sm" ${studentCurrentPage <= 1 ? 'disabled' : ''} onclick="changeStudentPage(${studentCurrentPage - 1})">Prev</button>
+              <span>Page ${studentCurrentPage} of ${totalPages}</span>
+              <button class="btn btn-secondary btn-sm" ${studentCurrentPage >= totalPages ? 'disabled' : ''} onclick="changeStudentPage(${studentCurrentPage + 1})">Next</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    let searchDebounceTimer = null;
+    function debounceStudentSearch(val) {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        studentSearchQuery = val.trim();
+        studentCurrentPage = 1;
+        renderStudentsView();
+      }, 300);
+    }
+
+    function sortStudentColumn(col) {
+      if (studentSortColumn === col) {
+        studentSortAsc = !studentSortAsc;
+      } else {
+        studentSortColumn = col;
+        studentSortAsc = true;
+      }
+      renderStudentsView();
+    }
+
+    function changeStudentPage(p) {
+      studentCurrentPage = p;
+      renderStudentsView();
+    }
+
+    function copyCellText(txt) {
+      if (!txt) return;
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast(`Copied "${txt}" to clipboard`, 'success');
+      });
+    }
+
+    async function exportStudentsCsv() {
+      try {
+        const res = await adminApi('export');
+        const blob = new Blob([res.csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = res.filename || 'students_export.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('CSV export downloaded successfully', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Student Add/Edit Modal
+    function openStudentModal(record = null) {
+      const isEdit = record && record._row;
+      $('studentModalTitle').textContent = isEdit ? 'Edit Student Record' : 'Add New Student';
+      $('btnSaveStudentSubmit').textContent = isEdit ? 'Update Student' : 'Add Student';
+      
+      const container = $('studentFormFields');
+      container.innerHTML = `
+        <input type="hidden" name="_row" value="${isEdit ? record._row : ''}">
+        ${studentHeaders.map(h => `
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">${esc(h)}</label>
+            <input type="text" class="input" name="${esc(h)}" value="${esc(record ? (record[h] || '') : '')}">
+          </div>
+        `).join('')}
+      `;
+
+      $('studentModal').classList.remove('hidden');
+    }
+
+    function closeStudentModal() {
+      $('studentModal').classList.add('hidden');
+    }
+
+    async function handleSaveStudent(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form));
+      data._row = Number(data._row || 0);
+
+      const btn = $('btnSaveStudentSubmit');
+      btn.disabled = true;
+      btn.innerHTML = 'Saving to Sheet…';
+
+      try {
+        const res = await post({ action: 'saveStudent', token: authToken, record: data });
+        if (!res.ok) throw new Error(res.error || 'Failed to save student record');
+        showToast('Student record saved successfully', 'success');
+        closeStudentModal();
+        renderStudentsView();
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Save Student Record';
+      }
+    }
+
+    async function handleDeleteStudent(row, name) {
+      if (!confirm(`Are you sure you want to permanently delete student record "${name}"? This cannot be undone.`)) return;
+      try {
+        const res = await post({ action: 'deleteStudent', token: authToken, row });
+        if (!res.ok) throw new Error(res.error || 'Failed to delete student');
+        showToast(`Student record deleted`, 'success');
+        renderStudentsView();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Student Detailed Inspector Modal
+    function openStudentDetailModal(record) {
+      $('detailStudentName').textContent = record['Name of Student'] || record['Enrollment Number'] || 'Student Profile';
+      $('detailStudentMeta').textContent = `Spreadsheet Row: ${record._row}`;
+      
+      const grid = $('detailStudentGrid');
+      grid.innerHTML = studentHeaders.map(h => `
+        <div class="verified-detail-chip">
+          <div class="verified-detail-label">${esc(h)}</div>
+          <div class="verified-detail-value">${esc(record[h] || '—')}</div>
+        </div>
+      `).join('');
+
+      $('btnEditFromDetail').onclick = () => {
+        closeStudentDetailModal();
+        openStudentModal(record);
+      };
+
+      $('studentDetailModal').classList.remove('hidden');
+    }
+
+    function closeStudentDetailModal() {
+      $('studentDetailModal').classList.add('hidden');
+    }
+
+    // ==========================================
+    // DYNAMIC FORM BUILDER VIEW
+    // ==========================================
+    async function renderFormsView() {
+      const [formsRes, metaRes] = await Promise.all([
+        adminApi('listForms'),
+        adminApi('formMeta')
+      ]);
+
+      formsList = formsRes.forms || [];
+      formMetadata = metaRes;
+      $('sidebarFormCount').textContent = formsList.length;
+
+      $('adminContent').innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3 class="panel-title">Dynamic Institutional Forms</h3>
+              <p class="panel-desc">Create shareable forms verified directly against spreadsheet records.</p>
+            </div>
+            <button class="btn btn-sm" onclick="openFormBuilderModal()">+ Create New Form</button>
+          </div>
+
+          ${formsList.length === 0 ? `
+            <div style="text-align: center; padding: 48px; color: var(--text-muted);">
+              <p style="font-size: 15px; font-weight: 700; margin-bottom: 8px;">No forms created yet</p>
+              <p style="font-size: 13px; margin-bottom: 18px;">Build your first student verification form with custom auto-filled & manual fields.</p>
+              <button class="btn btn-sm" onclick="openFormBuilderModal()">+ Create Form</button>
+            </div>
+          ` : `
+            <div class="form-cards-grid">
+              ${formsList.map(f => `
+                <div class="form-item-card">
+                  <div class="form-item-header">
+                    <div>
+                      <div class="form-item-title">${esc(f.title)}</div>
+                      <div class="form-item-desc">${esc(f.description || 'No description provided')}</div>
+                    </div>
+                    <span class="badge ${f.published ? 'badge-success' : 'badge-warning'}">
+                      ${f.published ? 'Published' : 'Draft'}
+                    </span>
+                  </div>
+
+                  <div class="form-item-meta">
+                    <span>${f.fields.length} Fields</span>
+                    <span>·</span>
+                    <span>${f.fields.some(x => x.lookupKey) ? '✓ Verified' : 'Manual'}</span>
+                  </div>
+
+                  <div class="form-item-actions">
+                    ${f.published ? `
+                      <button class="btn btn-secondary btn-sm" onclick="copyFormLink('${esc(f.id)}')">Copy Link</button>
+                      <button class="btn btn-secondary btn-sm" onclick="openFormQrModal('${esc(f.id)}', '${esc(f.title)}')">QR Code</button>
+                      <a href="?form=${encodeURIComponent(f.id)}" target="_blank" class="btn btn-secondary btn-sm">Open ↗</a>
+                    ` : ''}
+                    <button class="btn btn-secondary btn-sm" onclick="openFormBuilderModal('${esc(f.id)}')">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="handleDeleteForm('${esc(f.id)}', '${esc(f.title)}')">Delete</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function copyFormLink(id) {
+      const url = `${window.location.origin}${window.location.pathname}?form=${encodeURIComponent(id)}`;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Form link copied to clipboard!', 'success');
+      });
+    }
+
+    function openFormQrModal(id, title) {
+      const url = `${window.location.origin}${window.location.pathname}?form=${encodeURIComponent(id)}`;
+      $('qrFormTitle').textContent = title;
+      $('qrFormUrl').textContent = url;
+      
+      const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+      $('qrCodeImageWrap').innerHTML = `<img src="${qrApi}" alt="Form QR Code" style="width: 200px; height: 200px; display: block;">`;
+      
+      $('qrModal').dataset.url = url;
+      $('qrModal').classList.remove('hidden');
+    }
+
+    function closeQrModal() {
+      $('qrModal').classList.add('hidden');
+    }
+
+    function copyCurrentQrUrl() {
+      const url = $('qrModal').dataset.url;
+      if (url) {
+        navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard!', 'success'));
+      }
+    }
+
+    // Form Builder Editor Modal Logic
+    function openFormBuilderModal(formId = null) {
+      editingFormId = formId;
+      const f = formsList.find(x => x.id === formId) || {
+        title: '',
+        description: '',
+        published: true,
+        fields: [
+          { label: 'Enrollment Number', type: 'text', source: 'manual', sourceColumn: '', targetColumn: '', lookupKey: true, required: true },
+          { label: 'Student Name', type: 'text', source: 'sheet', sourceColumn: formMetadata.columns[0] || 'Name of Student', targetColumn: '', lookupKey: false, required: true }
+        ]
+      };
+
+      $('formBuilderModalTitle').textContent = formId ? 'Edit Form Configuration' : 'Create New Verified Form';
+      $('fbFormTitle').value = f.title || '';
+      $('fbFormDesc').value = f.description || '';
+      $('fbPublishedCheckbox').checked = !!f.published;
+      $('fbIdentityColBadge').textContent = `Identity Column: ${formMetadata.identityColumn || 'Enrollment Number'}`;
+
+      renderBuilderFieldsList(f.fields);
+      $('formBuilderModal').classList.remove('hidden');
+    }
+
+    function closeFormBuilderModal() {
+      $('formBuilderModal').classList.add('hidden');
+      editingFormId = null;
+    }
+
+    function renderBuilderFieldsList(fields) {
+      const container = $('fbFieldsList');
+      const cols = formMetadata.columns || [];
+
+      container.innerHTML = fields.map((f, i) => `
+        <div class="field-builder-row" data-index="${i}">
+          <div class="field-reorder">
+            <button type="button" onclick="moveBuilderField(${i}, -1)" ${i === 0 ? 'disabled style="opacity:0.2"' : ''}>▲</button>
+            <button type="button" onclick="moveBuilderField(${i}, 1)" ${i === fields.length - 1 ? 'disabled style="opacity:0.2"' : ''}>▼</button>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;">Label</label>
+            <input type="text" class="input f-label" value="${esc(f.label)}" placeholder="Student-facing label">
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;">Type</label>
+            <select class="select f-type">
+              <option value="text" ${f.type === 'text' ? 'selected' : ''}>Text</option>
+              <option value="email" ${f.type === 'email' ? 'selected' : ''}>Email</option>
+              <option value="tel" ${f.type === 'tel' ? 'selected' : ''}>Mobile / Tel</option>
+              <option value="number" ${f.type === 'number' ? 'selected' : ''}>Number</option>
+              <option value="date" ${f.type === 'date' ? 'selected' : ''}>Date</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;">Data Mode</label>
+            <select class="select f-source" onchange="toggleFieldSource(this)">
+              <option value="manual" ${f.source === 'manual' ? 'selected' : ''}>Manual Entry</option>
+              <option value="sheet" ${f.source === 'sheet' ? 'selected' : ''}>Auto-fill from Sheet</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;" class="f-col-label">
+              ${f.source === 'sheet' ? 'Source Column' : 'Destination Column'}
+            </label>
+            <select class="select f-target-col" style="${f.source === 'manual' && f.lookupKey ? 'display:none;' : ''}">
+              <option value="">${f.source === 'sheet' ? 'Select Sheet Column' : 'Save Answer in Column'}</option>
+              ${cols.map(c => `
+                <option value="${esc(c)}" ${(f.source === 'sheet' ? f.sourceColumn : f.targetColumn) === c ? 'selected' : ''}>
+                  ${esc(c)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:4px;">
+              <input type="checkbox" class="f-required" ${f.required ? 'checked' : ''}> Required
+            </label>
+            <label style="font-size: 11px; font-weight: 700; color:var(--primary); display:flex; align-items:center; gap:4px;">
+              <input type="checkbox" class="f-lookup" ${f.lookupKey ? 'checked' : ''} onchange="handleLookupKeyToggle(this)"> Identity Key
+            </label>
+          </div>
+
+          <button type="button" class="btn btn-danger btn-sm" onclick="removeBuilderField(${i})" style="padding: 6px 9px;">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function toggleFieldSource(select) {
+      const row = select.closest('.field-builder-row');
+      const isSheet = select.value === 'sheet';
+      const label = row.querySelector('.f-col-label');
+      label.textContent = isSheet ? 'Source Column' : 'Destination Column';
+      
+      const isLookup = row.querySelector('.f-lookup').checked;
+      row.querySelector('.f-target-col').style.display = (!isSheet && isLookup) ? 'none' : 'block';
+    }
+
+    function handleLookupKeyToggle(checkbox) {
+      const row = checkbox.closest('.field-builder-row');
+      if (checkbox.checked) {
+        document.querySelectorAll('.f-lookup').forEach(cb => {
+          if (cb !== checkbox) cb.checked = false;
+        });
+        row.querySelector('.f-source').value = 'manual';
+        row.querySelector('.f-target-col').style.display = 'none';
+      } else {
+        row.querySelector('.f-target-col').style.display = 'block';
+      }
+    }
+
+    function collectFieldsData() {
+      const rows = document.querySelectorAll('.field-builder-row');
+      return Array.from(rows).map((row, i) => {
+        const source = row.querySelector('.f-source').value;
+        const colVal = row.querySelector('.f-target-col').value;
+        const isLookup = row.querySelector('.f-lookup').checked;
+
+        return {
+          key: `f${i}`,
+          label: row.querySelector('.f-label').value.trim(),
+          type: row.querySelector('.f-type').value,
+          source: source,
+          sourceColumn: source === 'sheet' ? colVal : '',
+          targetColumn: source === 'manual' && !isLookup ? colVal : '',
+          lookupKey: isLookup,
+          required: row.querySelector('.f-required').checked
+        };
+      }).filter(f => f.label);
+    }
+
+    function addBuilderField() {
+      const current = collectFieldsData();
+      current.push({
+        label: '',
+        type: 'text',
+        source: 'manual',
+        sourceColumn: '',
+        targetColumn: '',
+        lookupKey: false,
+        required: true
+      });
+      renderBuilderFieldsList(current);
+    }
+
+    function removeBuilderField(idx) {
+      const current = collectFieldsData();
+      current.splice(idx, 1);
+      renderBuilderFieldsList(current);
+    }
+
+    function moveBuilderField(idx, dir) {
+      const current = collectFieldsData();
+      const target = idx + dir;
+      if (target < 0 || target >= current.length) return;
+      const temp = current[idx];
+      current[idx] = current[target];
+      current[target] = temp;
+      renderBuilderFieldsList(current);
+    }
+
+    async function handleSaveForm() {
+      const title = $('fbFormTitle').value.trim();
+      const description = $('fbFormDesc').value.trim();
+      const published = $('fbPublishedCheckbox').checked;
+      const fields = collectFieldsData();
+
+      if (!title) {
+        showToast('Please enter a Form Title', 'error');
+        return;
+      }
+      if (fields.length === 0) {
+        showToast('Please add at least one field to the form', 'error');
+        return;
+      }
+
+      // Check Verification Key
+      let lookupFields = fields.filter(f => f.lookupKey);
+      if (lookupFields.length === 0) {
+        const autoDetect = fields.find(f => ['enrollmentnumber', 'enrollmentno'].includes(f.label.toLowerCase().replace(/[^a-z0-9]/g, '')));
+        if (autoDetect) {
+          autoDetect.lookupKey = true;
+          lookupFields = [autoDetect];
+        }
+      }
+      if (lookupFields.length !== 1) {
+        showToast('Mark exactly one field as the Enrollment Number Identity Key.', 'error');
+        return;
+      }
+
+      // Validate destination columns
+      for (const f of fields) {
+        if (f.source === 'sheet' && !f.sourceColumn) {
+          showToast(`Select a source column for auto-fill field: "${f.label}"`, 'error');
+          return;
+        }
+        if (f.source === 'manual' && !f.lookupKey && !f.targetColumn) {
+          showToast(`Select a destination column to save answers for: "${f.label}"`, 'error');
+          return;
+        }
+      }
+
+      const btn = $('btnSaveFormSubmit');
+      btn.disabled = true;
+      btn.innerHTML = 'Saving Form…';
+
+      try {
+        const payload = {
+          id: editingFormId || '',
+          title,
+          description,
+          published,
+          fields
+        };
+
+        const res = await post({ action: 'saveForm', token: authToken, form: payload });
+        if (!res.ok) throw new Error(res.error || 'Failed to save form');
+
+        showToast('Form configuration saved successfully!', 'success');
+        closeFormBuilderModal();
+        renderFormsView();
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Save Form Configuration';
+      }
+    }
+
+    async function handleDeleteForm(id, title) {
+      if (!confirm(`Delete form "${title}"? Existing submissions will remain recorded in spreadsheet.`)) return;
+      try {
+        const res = await post({ action: 'deleteForm', token: authToken, formId: id });
+        if (!res.ok) throw new Error(res.error || 'Failed to delete form');
+        showToast('Form deleted', 'success');
+        renderFormsView();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Live Student Preview in Builder
+    function previewCurrentForm() {
+      const fields = collectFieldsData();
+      const title = $('fbFormTitle').value.trim() || 'Student Form Preview';
+      const desc = $('fbFormDesc').value.trim();
+
+      $('previewModalTitle').textContent = title;
+      const body = $('previewModalBody');
+
+      body.innerHTML = `
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">${esc(desc)}</p>
+        <div class="panel" style="background: var(--bg-subtle); padding: 16px; margin-bottom: 20px;">
+          <div style="font-weight: 700; font-size: 12px; margin-bottom: 8px;">Test Identity Verification:</div>
+          <div class="flex gap-2">
+            <input type="text" id="previewTestEnrollment" class="input" placeholder="Enter a real Enrollment Number from sheet">
+            <button type="button" class="btn btn-sm" onclick="runPreviewTestLookup()">Test Verify</button>
+          </div>
+          <div id="previewTestStatus" style="font-size: 12px; margin-top: 8px;"></div>
+        </div>
+
+        <div style="display: grid; gap: 14px;">
+          ${fields.map(f => `
+            <div>
+              <div class="flex justify-between" style="margin-bottom: 4px;">
+                <label style="font-size: 12px; font-weight: 700;">${esc(f.label)} ${f.required ? '<span style="color:var(--danger)">*</span>' : ''}</label>
+                <span class="badge ${f.source === 'sheet' ? 'badge-primary' : 'badge-subtle'}">
+                  ${f.source === 'sheet' ? 'AUTO-FILL' : (f.lookupKey ? 'IDENTITY KEY' : 'MANUAL')}
+                </span>
+              </div>
+              <input type="${esc(f.type)}" class="input preview-field-input" data-col="${esc(f.sourceColumn)}" data-mode="${esc(f.source)}" placeholder="${f.source === 'sheet' ? 'Will auto-fill on verification' : ''}" ${f.source === 'sheet' ? 'readonly' : ''}>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      $('previewModal').classList.remove('hidden');
+    }
+
+    async function runPreviewTestLookup() {
+      const val = $('previewTestEnrollment').value.trim();
+      const status = $('previewTestStatus');
+      if (!val) {
+        status.innerHTML = '<span style="color:var(--warning)">Enter an enrollment number first.</span>';
+        return;
+      }
+      status.innerHTML = 'Checking student spreadsheet…';
+
+      try {
+        const fields = collectFieldsData();
+        const cols = fields.filter(f => f.source === 'sheet').map(f => f.sourceColumn);
+        const res = await adminApi('previewLookup', { enrollment: val, columns: cols });
+        
+        status.innerHTML = `<span style="color:var(--success)">✓ Enrollment verified! Student record retrieved.</span>`;
+        
+        document.querySelectorAll('.preview-field-input').forEach(inp => {
+          const col = inp.dataset.col;
+          if (col && res.student && res.student[col] !== undefined) {
+            inp.value = res.student[col];
+          }
+        });
+      } catch (err) {
+        status.innerHTML = `<span style="color:var(--danger)">✕ ${esc(err.message)}</span>`;
+      }
+    }
+
+    function closePreviewModal() {
+      $('previewModal').classList.add('hidden');
+    }
+
+    // ==========================================
+    // RESPONSES VIEW
+    // ==========================================
+    let cachedResponses = null;
+    async function renderResponsesView() {
+      const res = await adminApi('responses');
+      cachedResponses = res;
+      const headers = res.headers || [];
+      const rows = res.rows || [];
+
+      $('adminContent').innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3 class="panel-title">Form Submissions Explorer</h3>
+              <p class="panel-desc">Showing ${rows.length} latest public submissions logged in Form_Responses sheet.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="exportResponsesCsv()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export CSV
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  ${headers.map(h => `<th>${esc(h)}</th>`).join('')}
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.length === 0 ? `
+                  <tr><td colspan="${headers.length + 1}" style="text-align: center; padding: 36px; color: var(--text-muted);">No submissions received yet.</td></tr>
+                ` : rows.map((r, i) => `
+                  <tr>
+                    ${r.map((val, cellIdx) => `
+                      <td>
+                        ${cellIdx === 5 ? `
+                          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); max-width: 240px; display: inline-block; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;">
+                            ${esc(val)}
+                          </span>
+                        ` : esc(val)}
+                      </td>
+                    `).join('')}
+                    <td style="text-align: right;">
+                      <button class="btn btn-secondary btn-sm" onclick='inspectResponsePayload(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Inspect</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function inspectResponsePayload(row) {
+      $('responseDetailMeta').textContent = `Form: ${row[2]} · Enrollment: ${row[4]} · Row: ${row[3]}`;
+      const container = $('responseDetailContent');
+      
+      let parsed = {};
+      try { parsed = JSON.parse(row[5] || '{}'); } catch (_) {}
+
+      container.innerHTML = `
+        <div class="panel" style="background: var(--bg-subtle); padding: 14px; margin: 0;">
+          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Submission Timestamp</div>
+          <div style="font-size: 14px; font-weight: 700;">${esc(row[0])}</div>
+        </div>
+        <div style="display: grid; gap: 8px;">
+          ${Object.keys(parsed).map(k => `
+            <div class="verified-detail-chip">
+              <div class="verified-detail-label">${esc(k)}</div>
+              <div class="verified-detail-value">${esc(parsed[k])}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      $('responseDetailModal').classList.remove('hidden');
+    }
+
+    function closeResponseDetailModal() {
+      $('responseDetailModal').classList.add('hidden');
+    }
+
+    function exportResponsesCsv() {
+      if (!cachedResponses || !cachedResponses.rows) return;
+      const headers = cachedResponses.headers;
+      const rows = cachedResponses.rows;
+      const csv = [headers, ...rows].map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+      
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `form_responses_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Responses exported to CSV', 'success');
+    }
+
+    // ==========================================
+    // PUBLIC FORM USER EXPERIENCE
+    // ==========================================
+    async function initPublicForm(formId) {
+      $('loginView').classList.add('hidden');
+      $('adminView').classList.add('hidden');
+      $('publicView').classList.remove('hidden');
+
+      updateSeo('Loading Form…');
+
+      try {
+        const res = await jsonp({ action: 'publicForm', formId });
+        if (!res.ok) throw new Error(res.error || 'Form is currently unavailable');
+
+        activePublicForm = res.form;
+        
+        // Dynamic SEO Title update as requested
+        updateSeo(activePublicForm.title, activePublicForm.description);
+
+        $('publicTitle').textContent = activePublicForm.title;
+        $('publicDesc').textContent = activePublicForm.description || 'Please complete the verified form fields below.';
+
+        renderPublicFields(activePublicForm);
+      } catch (err) {
+        updateSeo('Form Unavailable');
+        $('publicTitle').textContent = 'Form Unavailable';
+        $('publicDesc').textContent = err.message || 'This form does not exist or has been unpublished by the administrator.';
+        $('publicVerificationBox').classList.add('hidden');
+        $('publicSubmissionForm').classList.add('hidden');
+      }
+    }
+
+    function renderPublicFields(form) {
+      const container = $('publicFieldsContainer');
+      const lookupField = form.fields.find(f => f.lookupKey);
+      
+      if (!lookupField) {
+        $('publicVerificationBox').classList.add('hidden');
+        $('btnPublicSubmit').disabled = false;
+      }
+
+      container.innerHTML = form.fields.map(f => {
+        if (f.lookupKey) return ''; // Handled in Step 1 verification box
+        return `
+          <div class="field-wrap" id="wrap_${esc(f.key)}" style="${f.source === 'sheet' ? 'opacity: 0.75;' : ''}">
+            <div class="flex justify-between" style="margin-bottom: 5px;">
+              <label style="font-weight: 700; font-size: 13px;">
+                ${esc(f.label)} ${f.required ? '<span style="color:var(--danger)">*</span>' : ''}
+              </label>
+              ${f.source === 'sheet' ? '<span class="badge badge-primary">Auto-filled Record</span>' : ''}
+            </div>
+            <input 
+              type="${esc(f.type)}" 
+              name="${esc(f.key)}" 
+              class="input public-input" 
+              data-key="${esc(f.key)}" 
+              data-source="${esc(f.source)}" 
+              data-col="${esc(f.sourceColumn)}"
+              placeholder="${f.source === 'sheet' ? 'Verified from institutional record' : 'Enter ' + f.label}" 
+              ${f.source === 'sheet' ? 'readonly' : ''} 
+              ${f.required ? 'required' : ''}
+            >
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function handlePublicVerification() {
+      const enroll = $('publicEnrollmentInput').value.trim();
+      const status = $('verificationStatusText');
+      const btn = $('btnVerifyStudent');
+      const submitBtn = $('btnPublicSubmit');
+
+      if (!enroll) {
+        status.innerHTML = '<span style="color:var(--danger)">Please enter your Enrollment Number.</span>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = 'Verifying…';
+      status.innerHTML = '<span style="color:var(--text-muted)">Querying institutional database…</span>';
+
+      try {
+        const res = await jsonp({
+          action: 'lookupStudent',
+          enrollment: enroll,
+          formId: activePublicForm.id
+        });
+
+        if (!res.ok) throw new Error(res.error || 'Enrollment number could not be verified.');
+
+        verifiedStudentData = res.student;
+        $('publicVerificationBox').classList.add('verified');
+        $('verifiedStudentDetailsCard').classList.remove('hidden');
+        status.innerHTML = '';
+
+        // Fill verified chips & auto-fill inputs
+        const grid = $('verifiedDetailsGrid');
+        grid.innerHTML = Object.keys(verifiedStudentData).map(k => `
+          <div class="verified-detail-chip">
+            <div class="verified-detail-label">${esc(k)}</div>
+            <div class="verified-detail-value">${esc(verifiedStudentData[k] || '—')}</div>
+          </div>
+        `).join('');
+
+        // Populate form inputs
+        document.querySelectorAll('.public-input').forEach(inp => {
+          const col = inp.dataset.col;
+          if (inp.dataset.source === 'sheet' && col && verifiedStudentData[col] !== undefined) {
+            inp.value = verifiedStudentData[col];
+            inp.closest('.field-wrap').style.opacity = '1';
+          }
+        });
+
+        submitBtn.disabled = false;
+        showToast('Student record verified successfully!', 'success');
+      } catch (err) {
+        status.innerHTML = `<span style="color:var(--danger)">✕ ${esc(err.message)}</span>`;
+        submitBtn.disabled = true;
+        $('verifiedStudentDetailsCard').classList.add('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Verify Record';
+      }
+    }
+
+    async function handlePublicSubmit(e) {
+      e.preventDefault();
+      const formEl = e.target;
+      const formData = Object.fromEntries(new FormData(formEl));
+
+      const lookupField = activePublicForm.fields.find(f => f.lookupKey);
+      if (lookupField) {
+        const enroll = $('publicEnrollmentInput').value.trim();
+        if (!enroll || !verifiedStudentData) {
+          showToast('Please complete Enrollment Verification first.', 'error');
+          return;
+        }
+        formData[lookupField.key] = enroll;
+      }
+
+      formData.__formId = activePublicForm.id;
+
+      const btn = $('btnPublicSubmit');
+      btn.disabled = true;
+      btn.innerHTML = 'Submitting Data…';
+
+      try {
+        const res = await post({
+          action: 'submitForm',
+          formId: activePublicForm.id,
+          data: formData
+        });
+
+        if (!res.ok) throw new Error(res.error || 'Failed to submit form');
+
+        // Reveal Receipt Screen
+        $('publicFormContainer').classList.add('hidden');
+        $('publicSuccessScreen').classList.remove('hidden');
+        $('successMsgText').textContent = res.message || 'Submitted successfully. Your existing student record has been updated.';
+
+        const receipt = $('receiptDetails');
+        const now = new Date();
+        receipt.innerHTML = `
+          <div class="flex justify-between"><strong>Form Title:</strong> <span>${esc(activePublicForm.title)}</span></div>
+          <div class="flex justify-between"><strong>Enrollment Number:</strong> <span>${esc($('publicEnrollmentInput').value.trim())}</span></div>
+          <div class="flex justify-between"><strong>Submission Time:</strong> <span>${now.toLocaleDateString()} ${now.toLocaleTimeString()}</span></div>
+          <div class="flex justify-between"><strong>Verification Status:</strong> <span style="color:var(--success); font-weight:700;">Institutional Record Confirmed</span></div>
+        `;
+
+        showToast('Form submitted successfully!', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Information';
+      }
+    }
+
+    function resetPublicForm() {
+      $('publicSuccessScreen').classList.add('hidden');
+      $('publicFormContainer').classList.remove('hidden');
+      $('publicSubmissionForm').reset();
+      $('publicEnrollmentInput').value = '';
+      $('verifiedStudentDetailsCard').classList.add('hidden');
+      $('publicVerificationBox').classList.remove('verified');
+      $('btnPublicSubmit').disabled = true;
+    }
+
+    // ==========================================
+    // COMMAND PALETTE (CTRL+K)
+    // ==========================================
+    function openCommandPalette() {
+      $('cmdPaletteModal').classList.remove('hidden');
+      const input = $('cmdInput');
+      input.value = '';
+      input.focus();
+      handleCmdSearch('');
+    }
+
+    function closeCommandPalette() {
+      $('cmdPaletteModal').classList.add('hidden');
+    }
+
+    function handleCmdSearch(query) {
+      const q = query.toLowerCase().trim();
+      const list = $('cmdResultsList');
+
+      const defaultActions = [
+        { label: 'Go to Dashboard', icon: '◫', action: () => navigate('dashboard') },
+        { label: 'View Student Directory', icon: '👥', action: () => navigate('students') },
+        { label: 'Open Form Builder', icon: '📝', action: () => navigate('forms') },
+        { label: 'View Form Submissions', icon: '📊', action: () => navigate('responses') },
+        { label: 'Add New Student Record', icon: '+', action: () => { openStudentModal(); } },
+        { label: 'Create New Verified Form', icon: '📝', action: () => { openFormBuilderModal(); } },
+        { label: 'Toggle Light/Dark Theme', icon: '◐', action: () => toggleTheme() },
+        { label: 'Export All Students CSV', icon: '📥', action: () => exportStudentsCsv() }
+      ];
+
+      let matched = defaultActions.filter(a => !q || a.label.toLowerCase().includes(q));
+
+      // Match students if search query is longer
+      if (q && studentRecords.length > 0) {
+        const studentMatches = studentRecords.filter(r => 
+          Object.values(r).some(v => String(v).toLowerCase().includes(q))
+        ).slice(0, 5);
+
+        studentMatches.forEach(st => {
+          matched.push({
+            label: `Student: ${st['Name of Student'] || 'Record'} (${st['Enrollment Number'] || 'Row ' + st._row})`,
+            icon: '👤',
+            action: () => openStudentDetailModal(st)
+          });
+        });
+      }
+
+      list.innerHTML = matched.map((m, idx) => `
+        <div class="nav-item" onclick="executeCmdAction(${idx})" style="padding: 10px 14px; font-size: 13px;">
+          <span>${m.icon}</span>
+          <span style="flex-grow: 1;">${esc(m.label)}</span>
+          <span style="font-size: 10px; color: var(--text-muted);">↵</span>
+        </div>
+      `).join('');
+
+      window._currentCmdActions = matched;
+    }
+
+    function executeCmdAction(idx) {
+      if (window._currentCmdActions && window._currentCmdActions[idx]) {
+        closeCommandPalette();
+        window._currentCmdActions[idx].action();
+      }
+    }
+
+    // Keyboard Shortcuts Listener
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        openCommandPalette();
+      }
+      if (e.key === 'Escape') {
+        closeCommandPalette();
+        closeStudentModal();
+        closeStudentDetailModal();
+        closeFormBuilderModal();
+        closePreviewModal();
+        closeQrModal();
+        closeResponseDetailModal();
+      }
+    });
+
+    // ==========================================
+    // INITIALIZATION
+    // ==========================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedFormId = urlParams.get('form') || urlParams.get('formId');
+
+    if (requestedFormId) {
+      initPublicForm(requestedFormId);
+    } else if (authToken) {
+      $('loginView').classList.add('hidden');
+      $('adminView').classList.remove('hidden');
+      navigate('dashboard');
+    } else {
+      $('loginView').classList.remove('hidden');
+      updateSeo('Admin Sign In');
+    }
+  </script>
+</body>
+</html>
