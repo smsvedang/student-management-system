@@ -304,6 +304,7 @@ function saveForm_(form) {
       }
       return;
     }
+    if (field.lookupKey) return; // Enrollment Number is only the identity key; it is never written back.
     const destination=String(field.targetColumn||'').trim();
     const target=hi.headers.find(h=>norm_(h.name)===norm_(destination));
     if (!target) throw new Error('Select an existing destination column for manual field: '+field.label);
@@ -365,6 +366,7 @@ function submitForm_(id,data) {
     }
     const v=data[field.key];
     if (field.required && (v===undefined || String(v).trim()==='')) throw new Error(field.label+' is required.');
+    if (field.lookupKey) return; // Verification input is not a data destination.
     const destination=latestHi.headers.find(h=>norm_(h.name)===norm_(field.targetColumn||''));
     if (!destination) throw new Error('Destination column is missing for manual field: '+field.label+'. Edit the form and select an existing sheet column.');
     if (destination.col===enrollCol) throw new Error('Manual field cannot overwrite Enrollment Number.');
