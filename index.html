@@ -684,30 +684,67 @@
 
     /* Dynamic Field Builder Row */
     .field-builder-row {
-      background-color: var(--bg-subtle);
+      background-color: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 16px;
       margin-bottom: 12px;
-      display: grid;
-      grid-template-columns: auto 1.3fr 0.8fr 1fr 1fr auto auto;
-      gap: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .field-builder-top-actions {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
+      width: 100%;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+    }
+    .fb-field-group-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
     }
     .field-reorder {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      flex-direction: row;
+      gap: 6px;
     }
     .field-reorder button {
-      background: transparent;
-      border: none;
-      padding: 2px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 8px;
       cursor: pointer;
       color: var(--text-muted);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 11px;
     }
-    .field-reorder button:hover { background-color: var(--bg-surface); color: var(--primary); }
+    .field-reorder button:hover { background-color: var(--bg-subtle); color: var(--primary); border-color: var(--primary-border); }
+
+    .student-fields-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      align-content: start;
+    }
+    .verification-input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .dashboard-split-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    .quick-ops-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
 
     /* Public Form View */
     .public-container {
@@ -941,15 +978,177 @@
     /* Responsive Queries */
     @media (max-width: 1024px) {
       .sidebar { width: 240px; }
-      .field-builder-row { grid-template-columns: 1fr 1fr; }
+      .dashboard-split-grid { grid-template-columns: 1fr; gap: 18px; }
+      .form-cards-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
     }
+
     @media (max-width: 768px) {
       .admin-layout { flex-direction: column; }
       .sidebar { width: 100%; height: auto; position: static; }
-      .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
-      .top-bar { padding: 0 16px; }
-      .content-area { padding: 20px 16px; }
-      .public-card { padding: 22px; }
+      .sidebar-header { padding: 16px 14px; }
+      .sidebar-nav {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        padding: 8px 10px;
+      }
+      .nav-category { display: none; }
+      .nav-item {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 4px;
+        font-size: 11px;
+        text-align: center;
+        gap: 4px;
+      }
+      .nav-item svg { width: 18px; height: 18px; }
+      .nav-count { display: none; }
+      .sidebar-footer {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+      }
+      .sheet-status-box { padding: 6px 10px; font-size: 10px; }
+      .top-bar {
+        height: auto;
+        min-height: 56px;
+        padding: 10px 14px;
+        gap: 8px;
+      }
+      .breadcrumb-area .breadcrumb { display: none; }
+      .page-title { font-size: 17px; }
+      .quick-search-btn .quick-search-text,
+      .quick-search-btn .kbd-shortcut {
+        display: none;
+      }
+      .quick-search-btn { padding: 8px 10px; }
+      .content-area { padding: 16px 12px 60px; }
+      .panel { padding: 18px 14px; margin-bottom: 18px; }
+      .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .panel-header .flex {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .panel-header .btn {
+        flex: 1;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .input, .select, .textarea {
+        font-size: 16px !important; /* Prevents mobile iOS auto-zoom */
+        padding: 11px 13px !important;
+        min-height: 44px !important;
+      }
+      .btn {
+        min-height: 42px;
+      }
+      .student-fields-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+        padding: 16px 14px !important;
+      }
+      .student-fields-grid > div {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+      }
+      .verification-input-row {
+        flex-direction: column !important;
+      }
+      .verification-input-row .input {
+        width: 100% !important;
+      }
+      .verification-input-row .btn {
+        width: 100% !important;
+        padding: 12px !important;
+      }
+      .modal-backdrop {
+        padding: 6px !important;
+        align-items: flex-end !important;
+      }
+      .modal-box {
+        width: 100% !important;
+        max-height: 94vh !important;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+      }
+      .modal-header {
+        padding: 14px 16px !important;
+      }
+      .modal-body {
+        padding: 16px 14px !important;
+      }
+      .modal-footer {
+        padding: 12px 14px !important;
+        flex-direction: column-reverse !important;
+        width: 100% !important;
+      }
+      .modal-footer button,
+      .modal-footer .btn {
+        width: 100% !important;
+      }
+      .public-container {
+        padding: 0 10px 40px !important;
+        margin: 12px auto !important;
+      }
+      .public-brand-bar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+      }
+      .public-card {
+        padding: 18px 14px !important;
+        border-radius: var(--radius-lg) !important;
+      }
+      .public-title {
+        font-size: 21px !important;
+      }
+      .public-desc {
+        font-size: 13px !important;
+      }
+      .verification-card {
+        padding: 16px 14px !important;
+      }
+      .verified-details-grid {
+        grid-template-columns: 1fr !important;
+      }
+      #btnPublicSubmit {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+      .form-cards-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+      }
+      .stat-card {
+        padding: 14px !important;
+      }
+      .stat-value {
+        font-size: 22px !important;
+      }
+      .quick-ops-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+      .fb-field-group-2 {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .stats-grid {
+        grid-template-columns: 1fr !important;
+      }
     }
   </style>
 </head>
@@ -1011,8 +1210,8 @@
           </div>
         </div>
 
-        <div class="flex gap-2" style="margin-top: 14px;">
-          <input type="text" id="publicEnrollmentInput" class="input" placeholder="e.g. 21001234 or EN10293" style="font-weight: 600; font-size: 14px; text-transform: uppercase;">
+        <div class="verification-input-row" style="margin-top: 14px;">
+          <input type="text" id="publicEnrollmentInput" class="input" placeholder="e.g. 21001234 or EN10293" style="font-weight: 600; text-transform: uppercase;">
           <button type="button" class="btn" id="btnVerifyStudent" onclick="handlePublicVerification()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="20 6 9 17 4 12"/>
@@ -1240,7 +1439,7 @@
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <span>Quick search…</span>
+            <span class="quick-search-text">Quick search…</span>
             <span class="kbd-shortcut">Ctrl+K</span>
           </button>
 
@@ -1827,7 +2026,7 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="dashboard-split-grid">
           <div class="panel">
             <div class="panel-header">
               <div>
@@ -1835,7 +2034,7 @@
                 <p class="panel-desc">Manage student database, generate forms, or export CSV.</p>
               </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="quick-ops-grid">
               <button class="btn btn-secondary" onclick="navigate('students')" style="padding: 16px; justify-content: flex-start;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="11" cy="11" r="8"/>
@@ -2345,41 +2544,49 @@
 
       container.innerHTML = fields.map((f, i) => `
         <div class="field-builder-row" data-index="${i}">
-          <div class="field-reorder">
-            <button type="button" onclick="moveBuilderField(${i}, -1)" ${i === 0 ? 'disabled style="opacity:0.2"' : ''}>▲</button>
-            <button type="button" onclick="moveBuilderField(${i}, 1)" ${i === fields.length - 1 ? 'disabled style="opacity:0.2"' : ''}>▼</button>
+          <div class="field-builder-top-actions">
+            <div class="flex items-center gap-2">
+              <span class="badge badge-subtle" style="font-size: 10px;">Field #${i + 1}</span>
+              <div class="field-reorder">
+                <button type="button" onclick="moveBuilderField(${i}, -1)" ${i === 0 ? 'disabled style="opacity:0.2"' : ''} title="Move Up">▲</button>
+                <button type="button" onclick="moveBuilderField(${i}, 1)" ${i === fields.length - 1 ? 'disabled style="opacity:0.2"' : ''} title="Move Down">▼</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeBuilderField(${i})" style="padding: 4px 9px; font-size: 11px;">✕ Remove</button>
           </div>
 
-          <div>
-            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;">Label</label>
-            <input type="text" class="input f-label" value="${esc(f.label)}" placeholder="Student-facing label">
+          <div style="width: 100%;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">Student-Facing Field Label</label>
+            <input type="text" class="input f-label" value="${esc(f.label)}" placeholder="e.g. Student Name, Phone Number, Date of Birth">
           </div>
 
-          <div>
-            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;">Type</label>
-            <select class="select f-type">
-              <option value="text" ${f.type === 'text' ? 'selected' : ''}>Text</option>
-              <option value="email" ${f.type === 'email' ? 'selected' : ''}>Email</option>
-              <option value="tel" ${f.type === 'tel' ? 'selected' : ''}>Mobile / Tel</option>
-              <option value="number" ${f.type === 'number' ? 'selected' : ''}>Number</option>
-              <option value="date" ${f.type === 'date' ? 'selected' : ''}>Date</option>
-            </select>
+          <div class="fb-field-group-2">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">Field Type</label>
+              <select class="select f-type">
+                <option value="text" ${f.type === 'text' ? 'selected' : ''}>Text</option>
+                <option value="email" ${f.type === 'email' ? 'selected' : ''}>Email</option>
+                <option value="tel" ${f.type === 'tel' ? 'selected' : ''}>Mobile / Tel</option>
+                <option value="number" ${f.type === 'number' ? 'selected' : ''}>Number</option>
+                <option value="date" ${f.type === 'date' ? 'selected' : ''}>Date</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">Data Mode</label>
+              <select class="select f-source" onchange="toggleFieldSource(this)">
+                <option value="manual" ${f.source === 'manual' ? 'selected' : ''}>Manual Entry</option>
+                <option value="sheet" ${f.source === 'sheet' ? 'selected' : ''}>Auto-fill from Sheet</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;">Data Mode</label>
-            <select class="select f-source" onchange="toggleFieldSource(this)">
-              <option value="manual" ${f.source === 'manual' ? 'selected' : ''}>Manual Entry</option>
-              <option value="sheet" ${f.source === 'sheet' ? 'selected' : ''}>Auto-fill from Sheet</option>
-            </select>
-          </div>
-
-          <div>
-            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px;" class="f-col-label">
-              ${f.source === 'sheet' ? 'Source Column' : 'Destination Column'}
+          <div style="width: 100%;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;" class="f-col-label">
+              ${f.source === 'sheet' ? 'Source Column (Pull from Sheet)' : 'Destination Column (Save answer in Sheet)'}
             </label>
             <select class="select f-target-col" style="${f.source === 'manual' && f.lookupKey ? 'display:none;' : ''}">
-              <option value="">${f.source === 'sheet' ? 'Select Sheet Column' : 'Save Answer in Column'}</option>
+              <option value="">${f.source === 'sheet' ? 'Select Sheet Column' : 'Select Target Sheet Column'}</option>
               ${cols.map(c => `
                 <option value="${esc(c)}" ${(f.source === 'sheet' ? f.sourceColumn : f.targetColumn) === c ? 'selected' : ''}>
                   ${esc(c)}
@@ -2388,16 +2595,14 @@
             </select>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 4px;">
-            <label style="font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:4px;">
-              <input type="checkbox" class="f-required" ${f.required ? 'checked' : ''}> Required
+          <div class="flex items-center gap-4" style="padding-top: 4px; flex-wrap: wrap;">
+            <label style="font-size: 12px; font-weight: 700; display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" class="f-required" ${f.required ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--primary);"> Mandatory / Required
             </label>
-            <label style="font-size: 11px; font-weight: 700; color:var(--primary); display:flex; align-items:center; gap:4px;">
-              <input type="checkbox" class="f-lookup" ${f.lookupKey ? 'checked' : ''} onchange="handleLookupKeyToggle(this)"> Identity Key
+            <label style="font-size: 12px; font-weight: 700; color:var(--primary); display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" class="f-lookup" ${f.lookupKey ? 'checked' : ''} onchange="handleLookupKeyToggle(this)" style="width: 16px; height: 16px; accent-color: var(--primary);"> Enrollment Verification Key
             </label>
           </div>
-
-          <button type="button" class="btn btn-danger btn-sm" onclick="removeBuilderField(${i})" style="padding: 6px 9px;">✕</button>
         </div>
       `).join('');
     }
