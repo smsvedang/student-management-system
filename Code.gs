@@ -138,6 +138,7 @@ function adminAction_(p) {
     case 'deleteForm': return deleteForm_(p.formId);
     case 'responses': return getResponses_();
     case 'export': return exportCsv_();
+    case 'auditMissing': return auditMissing_();
     case 'logout': CacheService.getScriptCache().remove('sms_session_'+p.token); return {ok:true};
     default: throw new Error('Unknown admin action: '+action);
   }
@@ -180,11 +181,87 @@ function dashboard_() {
   const headers = hi.headers.map(x=>x.name);
   const values = dataRows ? sh.getRange(hi.row+1,1,dataRows,sh.getLastColumn()).getDisplayValues() : [];
   const filled = values.filter(r=>r.some(v=>String(v).trim())).length;
-  let missing=0;
+  let missing = 0;
+  let incompleteCount = 0;
   const nameCol = findCol_(hi,'student name|name of student|name');
   const enrollCol = findCol_(hi,'enrollment number|enrollment no');
-  values.forEach(r=>{if ((nameCol && !r[nameCol-1]) || (enrollCol && !r[enrollCol-1])) missing++;});
-  return {ok:true,total:filled,missing:missing,headerRow:hi.row,columns:headers.length,forms:listForms_().forms.length};
+  values.forEach(r => {
+    if (!r.some(v=>String(v).trim())) return;
+    const nameMissing = nameCol ? !String(r[nameCol-1]||'').trim() : false;
+    const enrollMissing = enrollCol ? !String(r[enrollCol-1]||'').trim() : false;
+    if (nameMissing || enrollMissing) missing++;
+    const hasAnyMissing = hi.headers.some(h => {
+      const v = String(r[h.col-1] || '').trim();
+      return !v || v === '—' || v.toLowerCase() === 'n/a';
+    });
+    if (hasAnyMissing) incompleteCount++;
+  });
+  return {
+    ok: true,
+    total: filled,
+    missing: incompleteCount || missing,
+    missingIdentity: missing,
+    incompleteCount: incompleteCount,
+    headerRow: hi.row,
+    columns: headers.length,
+    forms: listForms_().forms.length
+  };
+}
+
+function auditMissing_() {
+  const sh = getMainSheet_(), hi = headerInfo_(sh);
+  const last = sh.getLastRow();
+  const values = last > hi.row ? sh.getRange(hi.row+1,1,last-hi.row,sh.getLastColumn()).getDisplayValues() : [];
+  const nameCol = findCol_(hi,'student name|name of student|name');
+  const enrollCol = findCol_(hi,'enrollment number|enrollment no');
+  const headers = hi.headers.map(h => h.name);
+  const columnGaps = {};
+  headers.forEach(h => columnGaps[h] = 0);
+
+  const studentsWithGaps = [];
+  let totalDataGaps = 0;
+  let totalFilledStudents = 0;
+
+  values.forEach((r, i) => {
+    if (!r.some(v => String(v).trim())) return;
+    totalFilledStudents++;
+    const missing = [];
+    hi.headers.forEach(h => {
+      const v = String(r[h.col-1] || '').trim();
+      if (!v || v === '—' || v.toLowerCase() === 'n/a') {
+        missing.push(h.name);
+        columnGaps[h.name] = (columnGaps[h.name] || 0) + 1;
+        totalDataGaps++;
+      }
+    });
+
+    const studentName = nameCol ? (r[nameCol-1] || '') : '';
+    const enrollment = enrollCol ? (r[enrollCol-1] || '') : '';
+
+    if (missing.length > 0) {
+      studentsWithGaps.push({
+        _row: hi.row + 1 + i,
+        name: studentName,
+        enrollment: enrollment,
+        missingFields: missing,
+        completedCount: headers.length - missing.length,
+        totalFields: headers.length,
+        completionRate: Math.round(((headers.length - missing.length) / headers.length) * 100)
+      });
+    }
+  });
+
+  return {
+    ok: true,
+    headers: headers,
+    identityColumn: enrollCol ? hi.headers.find(h => h.col === enrollCol).name : '',
+    nameColumn: nameCol ? hi.headers.find(h => h.col === nameCol).name : '',
+    totalStudents: totalFilledStudents,
+    incompleteCount: studentsWithGaps.length,
+    totalGaps: totalDataGaps,
+    columnGaps: columnGaps,
+    students: studentsWithGaps
+  };
 }
 
 function listStudents_(query) {

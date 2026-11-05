@@ -1039,7 +1039,7 @@
         flex: 1;
         text-align: center;
       }
-    }
+}
 
     @media (max-width: 640px) {
       .input, .select, .textarea {
@@ -1150,6 +1150,111 @@
         grid-template-columns: 1fr !important;
       }
     }
+  
+    /* Missing Data Audit Section Styles */
+    .gap-filter-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .gap-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .gap-pill:hover {
+      background-color: var(--bg-surface);
+      border-color: var(--primary-border);
+      color: var(--primary);
+    }
+    .gap-pill.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+    .gap-pill-count {
+      padding: 1px 6px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 800;
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .gap-pill.active .gap-pill-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .suggestions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .suggestion-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--warning);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .suggestion-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--warning-border);
+    }
+    .suggestion-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .suggestion-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .suggestion-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+    .suggestion-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background-color: var(--bg-subtle);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
   </style>
 </head>
 <body>
@@ -1382,6 +1487,16 @@
           </svg>
           <span>Student Directory</span>
           <span class="nav-count" id="sidebarStudentCount">0</span>
+        </button>
+
+        <button class="nav-item" data-page="missing-data" onclick="navigate('missing-data')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>Missing Data</span>
+          <span class="nav-count" id="sidebarMissingCount" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">0</span>
         </button>
 
         <button class="nav-item" data-page="forms" onclick="navigate('forms')">
@@ -1671,6 +1786,113 @@
   <!-- ========================================== -->
   <!-- 5. JAVASCRIPT CORE SYSTEM                  -->
   <!-- ========================================== -->
+  
+  <!-- Missing Data Form Generator Modal -->
+  <div id="missingDataModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeMissingDataModal()">
+    <div class="modal-box" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 800; display:flex; align-items:center; gap:8px;">
+            <span style="color:#f59e0b;">⚡</span> Generate Missing Data Form
+          </h3>
+          <p style="font-size: 12px; color: var(--text-muted);" id="mdModalSubtitle">
+            Creates a verified student form mapped directly to missing sheet columns.
+          </p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeMissingDataModal()">✕</button>
+      </div>
+
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 18px;">
+        <!-- Target scope badge -->
+        <div id="mdTargetBanner" style="padding: 12px 14px; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 13px;">
+        </div>
+
+        <!-- Form Title & Desc -->
+        <div style="display: grid; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">Form Title</label>
+            <input type="text" id="mdFormTitle" class="input" placeholder="e.g. Student Records Missing Data Update Form">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">Instructions for Students</label>
+            <textarea id="mdFormDesc" class="textarea" rows="2" placeholder="Instructions shown on form..."></textarea>
+          </div>
+        </div>
+
+        <!-- Automated Verification & Autofill summary -->
+        <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12px;">
+          <div style="font-weight: 700; margin-bottom: 6px; color: var(--text-primary);">Pre-configured Verification Architecture:</div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span class="badge badge-primary">🔒 Identity Key: <span id="mdIdentityColLabel">Enrollment Number</span> (Verified against Sheet)</span>
+            <span class="badge badge-success">✨ Auto-Fill: <span id="mdNameColLabel">Student Name</span> (Displayed on Verification)</span>
+          </div>
+        </div>
+
+        <!-- Missing Fields Checklist -->
+        <div>
+          <div class="flex justify-between items-center" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: 700;">Select Missing Fields to Collect in Form:</label>
+            <div class="flex gap-2">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="toggleAllMissingFieldCheckboxes(true)" style="padding: 2px 8px; font-size: 11px;">Select All</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="toggleAllMissingFieldCheckboxes(false)" style="padding: 2px 8px; font-size: 11px;">Clear</button>
+            </div>
+          </div>
+          <div id="mdFieldsChecklist" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; max-height: 240px; overflow-y: auto; padding: 4px;">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closeMissingDataModal()">Cancel</button>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-secondary" onclick="handleCustomizeInFormBuilder()">
+            ✏️ Customize in Form Builder
+          </button>
+          <button type="button" class="btn" id="btnPublishMissingForm" onclick="handleDirectPublishMissingForm()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
+            ⚡ 1-Click Generate & Publish
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Share & Success Modal -->
+  <div id="formShareModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeFormShareModal()">
+    <div class="modal-box" style="max-width: 520px; text-align: center;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 17px; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 6px;">
+            ✓ Form Generated & Ready to Share!
+          </h3>
+          <p style="font-size: 12px; color: var(--text-muted);" id="shareModalSubtitle">Public form link is live and verified</p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeFormShareModal()">✕</button>
+      </div>
+
+      <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <div id="shareQrWrap" style="background:#fff; padding:14px; border-radius:12px; box-shadow:var(--shadow-sm); border:1px solid var(--border-subtle);"></div>
+        
+        <div style="width: 100%; text-align: left; background: var(--bg-subtle); padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Shareable Public Link</div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--primary); word-break: break-all; margin-top: 4px;" id="shareFormUrlText"></div>
+        </div>
+
+        <div style="width: 100%; text-align: left;">
+          <div style="font-size: 12px; font-weight: 700; margin-bottom: 4px;">Ready-to-Send Announcement Message:</div>
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 10px 12px; border-radius: var(--radius-md); font-size: 12px; color: var(--text-secondary); line-height: 1.4;" id="shareMsgTemplate"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between; gap: 8px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="copyShareMessage()">Copy Message</button>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="copyShareFormLink()">Copy Link</button>
+          <a href="#" target="_blank" id="btnOpenSharedForm" class="btn btn-sm">Open Form ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // System Configurations
     const API_URL = 'https://script.google.com/macros/s/AKfycbx6MOboyNMuEVpsa0vQiGBr3InLyE1cpEenxopBP_AYBMWscLmmxdKsxCCKGmQ8Dti1/exec';
@@ -1693,6 +1915,15 @@
     let studentSortAsc = true;
     let studentCurrentPage = 1;
     let studentPageSize = 25;
+
+    // Missing Data Auditor State
+    let missingAuditData = null;
+    let missingSearchQuery = '';
+    let missingSelectedCol = 'all';
+    let missingSortMode = 'most_gaps';
+    let missingShowComplete = false;
+    let currentMissingFormConfig = null;
+    let currentShareData = null;
     
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1931,6 +2162,7 @@
       const pageTitles = {
         dashboard: 'Dashboard',
         students: 'Student Directory',
+        'missing-data': 'Missing Data Audit & Form Generator',
         forms: 'Dynamic Form Builder',
         responses: 'Submissions Explorer'
       };
@@ -1943,6 +2175,7 @@
       const renderers = {
         dashboard: renderDashboard,
         students: renderStudentsView,
+        'missing-data': renderMissingDataView,
         forms: renderFormsView,
         responses: renderResponsesView
       };
@@ -1963,6 +2196,7 @@
       const data = await adminApi('dashboard');
       $('sidebarStudentCount').textContent = data.total;
       $('sidebarFormCount').textContent = data.forms;
+      if ($('sidebarMissingCount')) $('sidebarMissingCount').textContent = data.missing || 0;
 
       $('adminContent').innerHTML = `
         <div class="stats-grid">
@@ -1982,19 +2216,19 @@
             <div class="stat-subtext">Active student records in main tab</div>
           </div>
 
-          <div class="stat-card">
+          <div class="stat-card" onclick="navigate('missing-data')" style="cursor: pointer;" title="Click to view Missing Data Audit & generate forms">
             <div class="stat-header">
               <span class="stat-title">Incomplete Profiles</span>
               <div class="stat-icon" style="background: var(--warning-subtle); color: var(--warning);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="8" x2="12" y2="12"/>
-                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
               </div>
             </div>
             <div class="stat-value">${data.missing}</div>
-            <div class="stat-subtext">Missing name or enrollment number</div>
+            <div class="stat-subtext">Click to audit gaps & generate form ↗</div>
           </div>
 
           <div class="stat-card">
@@ -2035,6 +2269,18 @@
               </div>
             </div>
             <div class="quick-ops-grid">
+              <button class="btn btn-secondary" onclick="navigate('missing-data')" style="padding: 16px; justify-content: flex-start; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <div style="text-align: left;">
+                  <div style="font-weight: 700; color: var(--text-primary);">Missing Data Audit</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Inspect gaps & 1-click generate forms</div>
+                </div>
+              </button>
+
               <button class="btn btn-secondary" onclick="navigate('students')" style="padding: 16px; justify-content: flex-start;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="11" cy="11" r="8"/>
@@ -2415,6 +2661,787 @@
     }
 
     // ==========================================
+    // MISSING DATA AUDITOR & GENERATOR VIEW
+    // ==========================================
+
+    function guessFieldType(colName) {
+      const lower = String(colName || '').toLowerCase();
+      if (lower.includes('email') || lower.includes('mail')) return 'email';
+      if (lower.includes('mobile') || lower.includes('phone') || lower.includes('contact') || lower.includes('cell') || lower.includes('tel')) return 'tel';
+      if (lower.includes('date') || lower.includes('dob') || lower.includes('birth')) return 'date';
+      if (lower.includes('year') || lower.includes('semester') || lower.includes('sem') || lower.includes('age') || lower.includes('pincode') || lower.includes('zip')) return 'number';
+      return 'text';
+    }
+
+    async function fetchAuditData(forceRefresh = false) {
+      if (missingAuditData && !forceRefresh) return missingAuditData;
+
+      const [stRes, metaRes, formsRes] = await Promise.all([
+        adminApi('listStudents', { q: '' }),
+        adminApi('formMeta'),
+        adminApi('listForms')
+      ]);
+
+      studentHeaders = stRes.headers || [];
+      studentRecords = stRes.records || [];
+      formMetadata = metaRes || { columns: studentHeaders, identityColumn: 'Enrollment Number' };
+      formsList = formsRes.forms || [];
+
+      const headers = studentHeaders;
+      const records = studentRecords;
+
+      let identityCol = formMetadata.identityColumn || '';
+      if (!identityCol || !headers.includes(identityCol)) {
+        identityCol = headers.find(h => /enrollment/i.test(h)) || headers[0] || 'Enrollment Number';
+      }
+
+      let nameCol = headers.find(h => /student\s*name|name\s*of\s*student|^name$/i.test(h)) ||
+                    headers.find(h => /name/i.test(h)) || headers[0] || 'Student Name';
+
+      const columnGaps = {};
+      headers.forEach(h => { columnGaps[h] = 0; });
+
+      const studentsWithGaps = [];
+      const completeStudents = [];
+      let totalDataGaps = 0;
+
+      records.forEach((r, idx) => {
+        const missing = [];
+        headers.forEach(h => {
+          const v = r[h];
+          const isBlank = (v === undefined || v === null || String(v).trim() === '' || String(v).trim() === '—' || String(v).trim().toLowerCase() === 'n/a');
+          if (isBlank) {
+            missing.push(h);
+            columnGaps[h] = (columnGaps[h] || 0) + 1;
+            totalDataGaps++;
+          }
+        });
+
+        const sName = r[nameCol] || r['Name of Student'] || '';
+        const sEnroll = r[identityCol] || r['Enrollment Number'] || '';
+        const completedCount = headers.length - missing.length;
+        const rate = Math.round((completedCount / (headers.length || 1)) * 100);
+
+        const stObj = {
+          _row: r._row || (idx + 2),
+          name: sName,
+          enrollment: sEnroll,
+          record: r,
+          missingFields: missing,
+          completedCount,
+          totalFields: headers.length,
+          completionRate: rate
+        };
+
+        if (missing.length > 0) {
+          studentsWithGaps.push(stObj);
+        } else {
+          completeStudents.push(stObj);
+        }
+      });
+
+      const sortedCols = Object.keys(columnGaps)
+        .filter(k => columnGaps[k] > 0)
+        .sort((a, b) => columnGaps[b] - columnGaps[a]);
+
+      const totalSlots = records.length * headers.length;
+      const overallHealth = totalSlots > 0 ? Math.round(((totalSlots - totalDataGaps) / totalSlots) * 100) : 100;
+
+      missingAuditData = {
+        headers,
+        identityColumn: identityCol,
+        nameColumn: nameCol,
+        totalStudents: records.length,
+        incompleteCount: studentsWithGaps.length,
+        completeCount: completeStudents.length,
+        totalGaps: totalDataGaps,
+        columnGaps,
+        sortedMissingCols: sortedCols,
+        healthRate: overallHealth,
+        students: studentsWithGaps,
+        completeStudents: completeStudents
+      };
+
+      if ($('sidebarMissingCount')) $('sidebarMissingCount').textContent = studentsWithGaps.length;
+      return missingAuditData;
+    }
+
+    async function renderMissingDataView() {
+      const audit = await fetchAuditData();
+      
+      // Filter list
+      let filtered = [...audit.students];
+      if (missingShowComplete) {
+        filtered = [...filtered, ...audit.completeStudents];
+      }
+
+      if (missingSelectedCol !== 'all') {
+        filtered = filtered.filter(st => st.missingFields.includes(missingSelectedCol));
+      }
+
+      if (missingSearchQuery) {
+        const q = missingSearchQuery.toLowerCase();
+        filtered = filtered.filter(st => 
+          st.name.toLowerCase().includes(q) || 
+          st.enrollment.toLowerCase().includes(q) ||
+          st.missingFields.some(f => f.toLowerCase().includes(q))
+        );
+      }
+
+      // Sort
+      if (missingSortMode === 'most_gaps') {
+        filtered.sort((a, b) => b.missingFields.length - a.missingFields.length);
+      } else if (missingSortMode === 'least_gaps') {
+        filtered.sort((a, b) => a.missingFields.length - b.missingFields.length);
+      } else if (missingSortMode === 'name') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (missingSortMode === 'enrollment') {
+        filtered.sort((a, b) => a.enrollment.localeCompare(b.enrollment));
+      }
+
+      window._currentMissingStudentsList = filtered;
+
+      // Smart Suggestions Calculation
+      const contactCols = audit.sortedMissingCols.filter(c => /mobile|phone|contact|tel|email|mail/i.test(c));
+      const parentCols = audit.sortedMissingCols.filter(c => /father|mother|parent|guardian/i.test(c));
+      const mentorCols = audit.sortedMissingCols.filter(c => /mentor|guide|advisor|tutor/i.test(c));
+
+      const contactStudentsCount = contactCols.length ? audit.students.filter(s => s.missingFields.some(f => contactCols.includes(f))).length : 0;
+      const parentStudentsCount = parentCols.length ? audit.students.filter(s => s.missingFields.some(f => parentCols.includes(f))).length : 0;
+      const mentorStudentsCount = mentorCols.length ? audit.students.filter(s => s.missingFields.some(f => mentorCols.includes(f))).length : 0;
+      const criticalNoEnroll = audit.students.filter(s => !s.enrollment).length;
+
+      $('adminContent').innerHTML = `
+        <!-- KPI Header Grid -->
+        <div class="stats-grid" style="margin-bottom: 22px;">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Incomplete Profiles</span>
+              <div class="stat-icon" style="background: var(--warning-subtle); color: var(--warning);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">${audit.incompleteCount}</div>
+            <div class="stat-subtext">${audit.totalStudents ? Math.round((audit.incompleteCount / audit.totalStudents) * 100) : 0}% of ${audit.totalStudents} total students</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Total Data Gaps</span>
+              <div class="stat-icon" style="background: var(--danger-subtle); color: var(--danger);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">${audit.totalGaps}</div>
+            <div class="stat-subtext">Empty fields across all records</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Top Missing Attribute</span>
+              <div class="stat-icon" style="background: var(--primary-subtle); color: var(--primary);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" style="font-size: 20px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${esc(audit.sortedMissingCols[0] || 'None')}">
+              ${esc(audit.sortedMissingCols[0] || 'None')}
+            </div>
+            <div class="stat-subtext">${audit.sortedMissingCols[0] ? (audit.columnGaps[audit.sortedMissingCols[0]] + ' students affected') : 'No gaps detected'}</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Database Completeness</span>
+              <div class="stat-icon" style="background: var(--success-subtle); color: var(--success);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">${audit.healthRate}%</div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width: ${audit.healthRate}%; background: ${audit.healthRate > 80 ? 'var(--success)' : 'var(--warning)'};"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Action Banner -->
+        <div class="panel" style="background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(245,158,11,0.06)); border-color: var(--primary-border); margin-bottom: 22px; padding: 20px 24px;">
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size: 20px;">⚡</span>
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--text-primary); margin:0;">1-Click Missing Data Form Generator</h3>
+              </div>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px; max-width: 650px;">
+                Collect all missing student attributes in a single verified form. Students verify using their <strong>Enrollment Number</strong>, their Name auto-fills, and submitted answers are saved directly back into their existing sheet row.
+              </p>
+            </div>
+            <div class="flex gap-2 items-center flex-wrap">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="fetchAuditData(true).then(() => renderMissingDataView())">
+                ↻ Re-Audit Sheet
+              </button>
+              <button type="button" class="btn btn-lg" onclick="openMissingDataModal('all')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); font-weight: 800; box-shadow: 0 4px 14px rgba(37,99,235,0.35);">
+                ⚡ Generate Missing Data Form (All ${audit.sortedMissingCols.length} Gaps)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Suggestions Panel -->
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            Smart Suggestions & Actionable Recommendations
+          </div>
+
+          <div class="suggestions-grid">
+            <!-- Suggestion 1: All Gaps -->
+            <div class="suggestion-card" style="border-left-color: var(--primary);">
+              <div>
+                <div class="suggestion-header">
+                  <div class="suggestion-icon">📋</div>
+                  <div>
+                    <div class="suggestion-title">Complete Gap Collection Form</div>
+                    <div class="suggestion-desc">
+                      Bundles all <strong>${audit.sortedMissingCols.length} missing columns</strong> into one universal update form for all ${audit.incompleteCount} students.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                <span class="badge badge-primary">${audit.sortedMissingCols.length} Fields</span>
+                <button type="button" class="btn btn-sm" onclick="openMissingDataModal('all')">⚡ Generate Form</button>
+              </div>
+            </div>
+
+            <!-- Suggestion 2: Contact Info -->
+            ${contactCols.length > 0 ? `
+              <div class="suggestion-card" style="border-left-color: #3b82f6;">
+                <div>
+                  <div class="suggestion-header">
+                    <div class="suggestion-icon">📞</div>
+                    <div>
+                      <div class="suggestion-title">Student Contact Details Form</div>
+                      <div class="suggestion-desc">
+                        Targeted for <strong>${contactStudentsCount} students</strong> missing Phone or Email details: ${esc(contactCols.join(', '))}.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                  <span class="badge badge-subtle">${contactCols.length} Fields · ${contactStudentsCount} Students</span>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="generateCategoryMissingForm('contact')">⚡ Generate Form</button>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Suggestion 3: Parent Info -->
+            ${parentCols.length > 0 ? `
+              <div class="suggestion-card" style="border-left-color: #8b5cf6;">
+                <div>
+                  <div class="suggestion-header">
+                    <div class="suggestion-icon">👨‍👩‍👧</div>
+                    <div>
+                      <div class="suggestion-title">Parent / Guardian Records Form</div>
+                      <div class="suggestion-desc">
+                        Collect father or guardian contact records missing for <strong>${parentStudentsCount} students</strong>: ${esc(parentCols.join(', '))}.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                  <span class="badge badge-subtle">${parentCols.length} Fields · ${parentStudentsCount} Students</span>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="generateCategoryMissingForm('parent')">⚡ Generate Form</button>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Suggestion 4: Mentor Info -->
+            ${mentorCols.length > 0 ? `
+              <div class="suggestion-card" style="border-left-color: #10b981;">
+                <div>
+                  <div class="suggestion-header">
+                    <div class="suggestion-icon">🎓</div>
+                    <div>
+                      <div class="suggestion-title">Mentor & Academic Update Form</div>
+                      <div class="suggestion-desc">
+                        Assign mentors or collect academic info for <strong>${mentorStudentsCount} students</strong>: ${esc(mentorCols.join(', '))}.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                  <span class="badge badge-subtle">${mentorCols.length} Fields · ${mentorStudentsCount} Students</span>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="generateCategoryMissingForm('mentor')">⚡ Generate Form</button>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Suggestion 5: Missing Enrollment Alert -->
+            ${criticalNoEnroll > 0 ? `
+              <div class="suggestion-card" style="border-left-color: var(--danger);">
+                <div>
+                  <div class="suggestion-header">
+                    <div class="suggestion-icon">⚠️</div>
+                    <div>
+                      <div class="suggestion-title">Missing Enrollment Numbers</div>
+                      <div class="suggestion-desc">
+                        <strong>${criticalNoEnroll} records</strong> have no Enrollment Number. Please assign enrollment numbers in the main sheet so these students can verify on public forms.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                  <span class="badge badge-danger">Action Required</span>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="filterMissingByCol('${esc(audit.identityColumn)}')">Filter Records</button>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Student Database Gap Explorer -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3 class="panel-title">Student Records Gap Breakdown</h3>
+              <p class="panel-desc">Showing ${filtered.length} students. Click '⚡ 1-Click Form' to create a personalized form for any individual student or all gaps.</p>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" class="btn btn-sm" onclick="openMissingDataModal('all')">⚡ Form for All Gaps</button>
+            </div>
+          </div>
+
+          <!-- Column Filter Pills -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Filter by Specific Missing Column:</div>
+            <div class="gap-filter-pills">
+              <button type="button" class="gap-pill ${missingSelectedCol === 'all' ? 'active' : ''}" onclick="filterMissingByCol('all')">
+                All Missing Records <span class="gap-pill-count">${audit.incompleteCount}</span>
+              </button>
+              ${audit.sortedMissingCols.map(c => `
+                <button type="button" class="gap-pill ${missingSelectedCol === c ? 'active' : ''}" onclick="filterMissingByCol('${esc(c)}')">
+                  ${esc(c)} <span class="gap-pill-count">${audit.columnGaps[c]}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Search & Sort Controls -->
+          <div class="flex items-center justify-between flex-wrap gap-3" style="margin-bottom: 18px;">
+            <div style="position: relative; flex-grow: 1; max-width: 440px;">
+              <input type="text" class="input" placeholder="Search student name, enrollment, or missing field..." value="${esc(missingSearchQuery)}" oninput="debounceMissingSearch(this.value)" style="padding-left: 36px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2">
+                <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Sort:</label>
+                <select class="select" style="width: auto; padding: 6px 10px; font-size: 12px;" onchange="sortMissingStudents(this.value)">
+                  <option value="most_gaps" ${missingSortMode === 'most_gaps' ? 'selected' : ''}>Most Missing Fields First</option>
+                  <option value="least_gaps" ${missingSortMode === 'least_gaps' ? 'selected' : ''}>Least Missing Fields First</option>
+                  <option value="name" ${missingSortMode === 'name' ? 'selected' : ''}>Student Name (A-Z)</option>
+                  <option value="enrollment" ${missingSortMode === 'enrollment' ? 'selected' : ''}>Enrollment Number</option>
+                </select>
+              </div>
+
+              <label style="font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" ${missingShowComplete ? 'checked' : ''} onchange="toggleMissingCompleteFilter(this.checked)" style="accent-color: var(--primary);">
+                Show Complete Profiles (${audit.completeCount})
+              </label>
+            </div>
+          </div>
+
+          <!-- Data Table -->
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px;">#</th>
+                  <th>Student Name</th>
+                  <th>Enrollment Number</th>
+                  <th>Missing Attributes</th>
+                  <th style="width: 140px;">Completeness</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filtered.length === 0 ? `
+                  <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">No student records matched the filter.</td></tr>
+                ` : filtered.map((st, i) => `
+                  <tr>
+                    <td style="color: var(--text-muted); font-size: 11px;">${i + 1}</td>
+                    <td>
+                      <strong style="color: var(--text-primary); cursor: pointer;" onclick="openMissingStudentDetail(${i})">
+                        ${esc(st.name || 'Unnamed Record')}
+                      </strong>
+                    </td>
+                    <td>
+                      ${st.enrollment ? `
+                        <span class="badge badge-subtle" style="font-family: monospace; font-weight: 700;">${esc(st.enrollment)}</span>
+                      ` : `
+                        <span class="badge badge-danger" title="Cannot verify on public forms without an Enrollment Number">No Enrollment (Critical)</span>
+                      `}
+                    </td>
+                    <td>
+                      <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 450px;">
+                        ${st.missingFields.length === 0 ? `
+                          <span class="badge badge-success">✓ 100% Complete</span>
+                        ` : st.missingFields.map(f => `
+                          <span class="badge badge-warning" style="font-size: 11px;">${esc(f)}</span>
+                        `).join('')}
+                      </div>
+                    </td>
+                    <td>
+                      <div style="font-size: 11px; font-weight: 700; margin-bottom: 2px;">${st.completionRate}% (${st.completedCount}/${st.totalFields})</div>
+                      <div class="progress-bar-wrap" style="height: 5px;">
+                        <div class="progress-bar-fill" style="width: ${st.completionRate}%; background: ${st.completionRate === 100 ? 'var(--success)' : (st.completionRate > 60 ? 'var(--warning)' : 'var(--danger)')};"></div>
+                      </div>
+                    </td>
+                    <td style="text-align: right;">
+                      <div class="flex gap-2" style="justify-content: flex-end;">
+                        ${st.missingFields.length > 0 ? `
+                          <button type="button" class="btn btn-sm" onclick="openMissingStudentForm(${i})" style="font-weight: 700;" title="Generate a form with only this student's missing fields">
+                            ⚡ 1-Click Form
+                          </button>
+                        ` : ''}
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="openMissingStudentDetail(${i})">Inspect</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="openMissingStudentEdit(${i})">Edit</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function openMissingStudentForm(idx) {
+      if (window._currentMissingStudentsList && window._currentMissingStudentsList[idx]) {
+        openMissingDataModalForStudentObj(window._currentMissingStudentsList[idx]);
+      }
+    }
+
+    function openMissingStudentDetail(idx) {
+      if (window._currentMissingStudentsList && window._currentMissingStudentsList[idx]) {
+        openStudentDetailModal(window._currentMissingStudentsList[idx].record);
+      }
+    }
+
+    function openMissingStudentEdit(idx) {
+      if (window._currentMissingStudentsList && window._currentMissingStudentsList[idx]) {
+        openStudentModal(window._currentMissingStudentsList[idx].record);
+      }
+    }
+
+    function filterMissingByCol(col) {
+      missingSelectedCol = col;
+      renderMissingDataView();
+    }
+
+    function sortMissingStudents(mode) {
+      missingSortMode = mode;
+      renderMissingDataView();
+    }
+
+    function toggleMissingCompleteFilter(checked) {
+      missingShowComplete = checked;
+      renderMissingDataView();
+    }
+
+    let missingSearchDebounceTimer = null;
+    function debounceMissingSearch(val) {
+      clearTimeout(missingSearchDebounceTimer);
+      missingSearchDebounceTimer = setTimeout(() => {
+        missingSearchQuery = val.trim();
+        renderMissingDataView();
+      }, 300);
+    }
+
+    // Modal & Form Generation Logic
+    function openMissingDataModal(scope = 'all') {
+      if (!missingAuditData) return;
+
+      let targetCols = [];
+      let defaultTitle = '';
+      let defaultDesc = '';
+      let bannerText = '';
+
+      if (scope === 'all') {
+        targetCols = [...missingAuditData.sortedMissingCols].filter(c => c !== missingAuditData.identityColumn);
+        defaultTitle = 'Student Records Missing Data Update Form';
+        defaultDesc = 'Please enter your verified Enrollment Number. Your student identity will be looked up, and you can provide your updated missing information to complete institutional records.';
+        bannerText = `<strong>Scope: All Incomplete Records</strong> · Target: ${missingAuditData.incompleteCount} students with ${targetCols.length} distinct data gaps.`;
+      }
+
+      currentMissingFormConfig = {
+        scope: scope,
+        targetCols: targetCols,
+        student: null
+      };
+
+      setupMissingModalContent(defaultTitle, defaultDesc, bannerText, targetCols);
+    }
+
+    function openMissingDataModalForStudentObj(studentObj) {
+      if (!missingAuditData) return;
+      const targetCols = studentObj.missingFields.filter(c => c !== missingAuditData.identityColumn);
+      const studentName = studentObj.name || 'Student';
+      const enrollment = studentObj.enrollment || 'Row ' + studentObj._row;
+
+      const defaultTitle = `Missing Data Form — ${studentName} (${enrollment})`;
+      const defaultDesc = `Personalized missing data collection form for ${studentName}. Please verify your Enrollment Number (${enrollment}) and fill in the missing fields.`;
+      const bannerText = `<strong>Personalized Student Scope:</strong> ${studentName} · Enrollment: <strong>${enrollment}</strong> · ${targetCols.length} missing field${targetCols.length > 1 ? 's' : ''}.`;
+
+      currentMissingFormConfig = {
+        scope: 'student',
+        targetCols: targetCols,
+        student: studentObj
+      };
+
+      setupMissingModalContent(defaultTitle, defaultDesc, bannerText, targetCols);
+    }
+
+    function generateCategoryMissingForm(category) {
+      if (!missingAuditData) return;
+      let targetCols = [];
+      let defaultTitle = '';
+      let defaultDesc = '';
+
+      if (category === 'contact') {
+        targetCols = missingAuditData.sortedMissingCols.filter(c => /mobile|phone|contact|tel|email|mail/i.test(c));
+        defaultTitle = 'Student Contact Details Verification Form';
+        defaultDesc = 'Please verify your Enrollment Number and provide your updated mobile number and email address.';
+      } else if (category === 'parent') {
+        targetCols = missingAuditData.sortedMissingCols.filter(c => /father|mother|parent|guardian/i.test(c));
+        defaultTitle = 'Parent & Guardian Information Form';
+        defaultDesc = 'Please verify your Enrollment Number and submit your parent / guardian contact records.';
+      } else if (category === 'mentor') {
+        targetCols = missingAuditData.sortedMissingCols.filter(c => /mentor|guide|advisor|tutor/i.test(c));
+        defaultTitle = 'Mentor & Academic Record Update Form';
+        defaultDesc = 'Please verify your Enrollment Number to update mentor assignment and institutional details.';
+      }
+
+      const bannerText = `<strong>Category Scope (${category.toUpperCase()}):</strong> Target: ${targetCols.length} missing attribute${targetCols.length > 1 ? 's' : ''}.`;
+
+      currentMissingFormConfig = {
+        scope: category,
+        targetCols: targetCols,
+        student: null
+      };
+
+      setupMissingModalContent(defaultTitle, defaultDesc, bannerText, targetCols);
+    }
+
+    function setupMissingModalContent(title, desc, banner, cols) {
+      $('mdFormTitle').value = title;
+      $('mdFormDesc').value = desc;
+      $('mdTargetBanner').innerHTML = banner;
+      $('mdIdentityColLabel').textContent = missingAuditData.identityColumn || 'Enrollment Number';
+      $('mdNameColLabel').textContent = missingAuditData.nameColumn || 'Student Name';
+
+      const checklist = $('mdFieldsChecklist');
+      const allCols = missingAuditData.sortedMissingCols.filter(c => c !== missingAuditData.identityColumn);
+
+      checklist.innerHTML = allCols.map((c, i) => {
+        const isChecked = cols.includes(c);
+        const fType = guessFieldType(c);
+        const count = missingAuditData.columnGaps[c] || 0;
+        return `
+          <label class="panel" style="padding: 10px 12px; margin: 0; background: var(--bg-surface); border: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: var(--radius-md);">
+            <input type="checkbox" class="md-col-checkbox" value="${esc(c)}" ${isChecked ? 'checked' : ''} style="accent-color: var(--primary); width: 16px; height: 16px;">
+            <div style="flex-grow: 1; min-width: 0;">
+              <div style="font-size: 12px; font-weight: 700; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${esc(c)}</div>
+              <div class="flex gap-2 items-center" style="margin-top: 2px;">
+                <span class="badge badge-subtle" style="font-size: 9px; padding: 1px 5px;">${fType.toUpperCase()}</span>
+                <span style="font-size: 10px; color: var(--text-muted);">${count} missing</span>
+              </div>
+            </div>
+          </label>
+        `;
+      }).join('');
+
+      $('missingDataModal').classList.remove('hidden');
+    }
+
+    function closeMissingDataModal() {
+      $('missingDataModal').classList.add('hidden');
+      currentMissingFormConfig = null;
+    }
+
+    function toggleAllMissingFieldCheckboxes(state) {
+      document.querySelectorAll('.md-col-checkbox').forEach(cb => { cb.checked = state; });
+    }
+
+    function buildMissingFormPayload() {
+      const title = $('mdFormTitle').value.trim();
+      const desc = $('mdFormDesc').value.trim();
+      if (!title) throw new Error('Form Title is required.');
+
+      const checkedCols = Array.from(document.querySelectorAll('.md-col-checkbox:checked')).map(cb => cb.value);
+      if (checkedCols.length === 0) throw new Error('Please select at least one field to collect.');
+
+      const identityCol = missingAuditData.identityColumn || 'Enrollment Number';
+      const nameCol = missingAuditData.nameColumn || 'Name of Student';
+
+      const fields = [
+        {
+          key: 'f0',
+          label: identityCol,
+          type: 'text',
+          source: 'manual',
+          sourceColumn: '',
+          targetColumn: '',
+          lookupKey: true,
+          required: true
+        },
+        {
+          key: 'f1',
+          label: nameCol,
+          type: 'text',
+          source: 'sheet',
+          sourceColumn: nameCol,
+          targetColumn: '',
+          lookupKey: false,
+          required: true
+        }
+      ];
+
+      checkedCols.forEach((col, idx) => {
+        fields.push({
+          key: `f${idx + 2}`,
+          label: col,
+          type: guessFieldType(col),
+          source: 'manual',
+          sourceColumn: '',
+          targetColumn: col,
+          lookupKey: false,
+          required: true
+        });
+      });
+
+      return {
+        id: '',
+        title: title,
+        description: desc,
+        published: true,
+        fields: fields
+      };
+    }
+
+    async function handleDirectPublishMissingForm() {
+      let payload;
+      try {
+        payload = buildMissingFormPayload();
+      } catch (err) {
+        showToast(err.message, 'warning');
+        return;
+      }
+
+      const btn = $('btnPublishMissingForm');
+      btn.disabled = true;
+      btn.innerHTML = 'Publishing Form…';
+
+      try {
+        const res = await post({ action: 'saveForm', token: authToken, form: payload });
+        if (!res.ok) throw new Error(res.error || 'Failed to save form');
+
+        closeMissingDataModal();
+        showToast('Missing Data Form generated and published successfully!', 'success');
+        
+        // Refresh forms list in background
+        adminApi('listForms').then(r => {
+          formsList = r.forms || [];
+          if ($('sidebarFormCount')) $('sidebarFormCount').textContent = formsList.length;
+        }).catch(()=>{});
+
+        openFormShareModal(res.id, payload.title, payload.fields);
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '⚡ 1-Click Generate & Publish';
+      }
+    }
+
+    function handleCustomizeInFormBuilder() {
+      let payload;
+      try {
+        payload = buildMissingFormPayload();
+      } catch (err) {
+        showToast(err.message, 'warning');
+        return;
+      }
+
+      closeMissingDataModal();
+      openFormBuilderModal(null, payload);
+    }
+
+    function openFormShareModal(formId, formTitle, fields) {
+      const url = `${window.location.origin}${window.location.pathname}?form=${encodeURIComponent(formId)}`;
+      const manualFields = (fields || []).filter(f => !f.lookupKey && f.source === 'manual').map(f => f.label);
+
+      currentShareData = {
+        id: formId,
+        title: formTitle,
+        url: url,
+        fieldsText: manualFields.join(', ')
+      };
+
+      $('shareModalSubtitle').textContent = formTitle;
+      $('shareFormUrlText').textContent = url;
+      $('btnOpenSharedForm').href = url;
+
+      const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+      $('shareQrWrap').innerHTML = `<img src="${qrApi}" alt="Form QR" style="width: 180px; height: 180px; display: block;">`;
+
+      const msg = `Dear Student,\n\nPlease complete your pending records on the institutional portal. Verify using your Enrollment Number to update: ${manualFields.join(', ')}.\n\nForm Link: ${url}`;
+      $('shareMsgTemplate').textContent = msg;
+
+      $('formShareModal').classList.remove('hidden');
+    }
+
+    function closeFormShareModal() {
+      $('formShareModal').classList.add('hidden');
+      currentShareData = null;
+    }
+
+    function copyShareFormLink() {
+      if (currentShareData && currentShareData.url) {
+        navigator.clipboard.writeText(currentShareData.url).then(() => {
+          showToast('Form link copied to clipboard!', 'success');
+        });
+      }
+    }
+
+    function copyShareMessage() {
+      if (currentShareData) {
+        const msg = $('shareMsgTemplate').textContent;
+        navigator.clipboard.writeText(msg).then(() => {
+          showToast('Announcement message copied to clipboard!', 'success');
+        });
+      }
+    }
+
+
+    // ==========================================
     // DYNAMIC FORM BUILDER VIEW
     // ==========================================
     async function renderFormsView() {
@@ -2511,9 +3538,9 @@
     }
 
     // Form Builder Editor Modal Logic
-    function openFormBuilderModal(formId = null) {
+    function openFormBuilderModal(formId = null, initialFormData = null) {
       editingFormId = formId;
-      const f = formsList.find(x => x.id === formId) || {
+      const f = initialFormData || (formId ? formsList.find(x => x.id === formId) : null) || {
         title: '',
         description: '',
         published: true,
@@ -2523,7 +3550,7 @@
         ]
       };
 
-      $('formBuilderModalTitle').textContent = formId ? 'Edit Form Configuration' : 'Create New Verified Form';
+      $('formBuilderModalTitle').textContent = formId ? 'Edit Form Configuration' : (initialFormData ? 'Custom Missing Data Form Designer' : 'Create New Verified Form');
       $('fbFormTitle').value = f.title || '';
       $('fbFormDesc').value = f.description || '';
       $('fbPublishedCheckbox').checked = !!f.published;
@@ -3150,7 +4177,9 @@
         { label: 'Add New Student Record', icon: '+', action: () => { openStudentModal(); } },
         { label: 'Create New Verified Form', icon: '📝', action: () => { openFormBuilderModal(); } },
         { label: 'Toggle Light/Dark Theme', icon: '◐', action: () => toggleTheme() },
-        { label: 'Export All Students CSV', icon: '📥', action: () => exportStudentsCsv() }
+        { label: 'Export All Students CSV', icon: '📥', action: () => exportStudentsCsv() },
+        { label: 'Missing Data Audit & Gap Forms', icon: '⚠️', action: () => navigate('missing-data') },
+        { label: '1-Click Generate Missing Data Form (All Gaps)', icon: '⚡', action: () => { navigate('missing-data'); setTimeout(() => openMissingDataModal('all'), 300); } }
       ];
 
       let matched = defaultActions.filter(a => !q || a.label.toLowerCase().includes(q));
