@@ -8,7 +8,7 @@
  * 3. Run setup() once and authorize.
  * 4. Deploy as Web App: Execute as Me; access Anyone.
  *
- * Public reads are intentionally limited to published form definitions.
+ * Public reads are intentionally limited to published form definitions and student lookups.
  * All admin operations require an expiring server-side session token.
  */
 const CFG = {
@@ -60,10 +60,11 @@ function doGet(e) {
     }
     else if (action === 'publicForm') result = publicForm_(p.formId);
     else if (action === 'lookupStudent') result = lookupStudent_(p.enrollment, p.formId);
+    else if (action === 'universalLookup') result = universalLookup_(p.enrollment);
     else if (action === 'admin') {
       requireSession_(p.token);
       result = adminAction_(p);
-    } else throw new Error('Unknown action');
+    } else throw new Error('Unknown action: ' + action);
   } catch (err) {
     result = {ok:false, error:err.message || String(err)};
   }
@@ -77,6 +78,7 @@ function doPost(e) {
     const action = String(p.action || '');
     if (action === 'login') result = login_(p.password);
     else if (action === 'submitForm') result = submitForm_(p.formId || (p.data && p.data.__formId), p.data || {});
+    else if (action === 'universalSubmit') result = universalSubmit_(p.enrollment, p.mode, p.data || {});
     else {
       requireSession_(p.token);
       result = adminAction_(p);
@@ -347,6 +349,174 @@ function lookupStudent_(enrollment, formId) {
   const record = {};
   hi.headers.forEach(h => { if (allowed.indexOf(h.name)>=0 || h.col===col) record[h.name] = rows[idx][h.col-1] || ''; });
   return {ok:true,student:record};
+}
+
+/**
+ * Universal Form Lookup:
+ * Checks enrollment number against the sheet and determines:
+ * 1. 'not_found' -> Returns all headers so student can register from scratch.
+ * 2. 'incomplete' -> Returns verified data + list of missing fields only.
+ * 3. 'complete' -> Returns 100% complete status, no inputs needed.
+ */
+function universalLookup_(enrollment) {
+  const key = String(enrollment || '').trim();
+  if (!key) throw new Error('Please enter your Enrollment Number.');
+  const lowerKey = key.toLowerCase();
+
+  const sh = getMainSheet_(), hi = headerInfo_(sh);
+  const enrollCol = findCol_(hi,'enrollment number|enrollment no');
+  if (!enrollCol) throw new Error('Enrollment Number column is not configured in the student database.');
+  const enrollHeader = hi.headers.find(h=>h.col===enrollCol).name;
+
+  const nameCol = findCol_(hi,'student name|name of student|name');
+  const nameHeader = nameCol ? hi.headers.find(h=>h.col===nameCol).name : '';
+
+  const headers = hi.headers.map(h=>h.name);
+  const last = sh.getLastRow();
+  const rows = last > hi.row ? sh.getRange(hi.row+1,1,last-hi.row,sh.getLastColumn()).getDisplayValues() : [];
+  const idx = rows.findIndex(r => String(r[enrollCol-1] || '').trim().toLowerCase() === lowerKey);
+
+  // CASE 1: Student Not Found -> Provide all fields for full registration
+  if (idx < 0) {
+    return {
+      ok: true,
+      status: 'not_found',
+      enrollment: key,
+      identityColumn: enrollHeader,
+      nameColumn: nameHeader,
+      headers: headers,
+      message: 'No record was found with Enrollment Number "' + key + '". Please fill in all details below to register your student profile.'
+    };
+  }
+
+  // Student Found -> Inspect filled vs missing fields
+  const studentRecord = {};
+  const filledFields = {};
+  const missingFields = [];
+
+  hi.headers.forEach(h => {
+    const val = String(rows[idx][h.col-1] || '').trim();
+    studentRecord[h.name] = val;
+    if (h.col === enrollCol) {
+      filledFields[h.name] = val;
+      return;
+    }
+    if (!val || val === '—' || val.toLowerCase() === 'n/a') {
+      missingFields.push(h.name);
+    } else {
+      filledFields[h.name] = val;
+    }
+  });
+
+  const studentName = nameHeader ? (studentRecord[nameHeader] || '') : '';
+
+  // CASE 2: All Details are Up to Date
+  if (missingFields.length === 0) {
+    return {
+      ok: true,
+      status: 'complete',
+      enrollment: studentRecord[enrollHeader] || key,
+      name: studentName,
+      identityColumn: enrollHeader,
+      nameColumn: nameHeader,
+      student: studentRecord,
+      headers: headers,
+      message: 'All details are up to date! Your institutional profile is 100% complete.'
+    };
+  }
+
+  // CASE 3: Some fields are missing -> Present only missing fields
+  return {
+    ok: true,
+    status: 'incomplete',
+    enrollment: studentRecord[enrollHeader] || key,
+    name: studentName,
+    identityColumn: enrollHeader,
+    nameColumn: nameHeader,
+    student: studentRecord,
+    filledFields: filledFields,
+    missingFields: missingFields,
+    headers: headers,
+    message: 'Profile verified. You have ' + missingFields.length + ' missing field(s). Please submit them below.'
+  };
+}
+
+/**
+ * Universal Form Submission:
+ * Handles:
+ * - mode === 'new' -> Creates new student record with all submitted fields.
+ * - mode === 'update' -> Updates existing student row with missing fields.
+ */
+function universalSubmit_(enrollment, mode, data) {
+  const key = String(enrollment || (data && data.__enrollment) || '').trim();
+  if (!key) throw new Error('Enrollment Number is required.');
+  const lowerKey = key.toLowerCase();
+
+  const sh = getMainSheet_(), hi = headerInfo_(sh);
+  const enrollCol = findCol_(hi,'enrollment number|enrollment no');
+  if (!enrollCol) throw new Error('Enrollment Number column is missing in the student sheet.');
+  const enrollHeader = hi.headers.find(h=>h.col===enrollCol).name;
+
+  const last = sh.getLastRow();
+  const rows = last > hi.row ? sh.getRange(hi.row+1,1,last-hi.row,sh.getLastColumn()).getDisplayValues() : [];
+  const matchIndex = rows.findIndex(r => String(r[enrollCol-1] || '').trim().toLowerCase() === lowerKey);
+
+  const responseSheet = SpreadsheetApp.openById(CFG.SPREADSHEET_ID).getSheetByName(CFG.RESPONSES_TAB);
+  const width = sh.getLastColumn();
+
+  // Mode: Register New Student
+  if (mode === 'new' || matchIndex < 0) {
+    if (matchIndex >= 0) {
+      throw new Error('A student record with Enrollment Number "' + key + '" already exists. Please verify your record instead.');
+    }
+    const newRow = new Array(width).fill('');
+    newRow[enrollCol-1] = key;
+    hi.headers.forEach(h => {
+      if (h.col === enrollCol) return;
+      if (data && data[h.name] !== undefined) {
+        newRow[h.col-1] = String(data[h.name]).trim();
+      }
+    });
+
+    const targetRow = Math.max(sh.getLastRow()+1, hi.row+1);
+    sh.getRange(targetRow, 1, 1, width).setValues([newRow]);
+    if (responseSheet) {
+      responseSheet.appendRow([new Date(), 'universal_new', 'Universal Portal (New Registration)', targetRow, key, JSON.stringify(data)]);
+    }
+    log_('UNIVERSAL_NEW_STUDENT', 'Enrollment: ' + key + ' Row ' + targetRow, 'public');
+    return {
+      ok: true,
+      status: 'created',
+      message: 'Registration successful! Your student record has been added to the institutional database.'
+    };
+  }
+
+  // Mode: Update Existing Student Missing Fields
+  const targetRow = hi.row + 1 + matchIndex;
+  const oldRow = sh.getRange(targetRow, 1, 1, width).getValues()[0];
+  let updatedCount = 0;
+
+  hi.headers.forEach(h => {
+    if (h.col === enrollCol) return; // Never overwrite enrollment number
+    if (data && data[h.name] !== undefined) {
+      const newVal = String(data[h.name]).trim();
+      if (newVal !== '') {
+        oldRow[h.col-1] = newVal;
+        updatedCount++;
+      }
+    }
+  });
+
+  sh.getRange(targetRow, 1, 1, width).setValues([oldRow]);
+  if (responseSheet) {
+    responseSheet.appendRow([new Date(), 'universal_update', 'Universal Portal (Missing Data Update)', targetRow, key, JSON.stringify(data)]);
+  }
+  log_('UNIVERSAL_UPDATE_STUDENT', 'Enrollment: ' + key + ' (' + updatedCount + ' fields updated)', 'public');
+  return {
+    ok: true,
+    status: 'updated',
+    message: 'Profile updated successfully! Your missing records have been updated in the database.'
+  };
 }
 
 function listForms_() {

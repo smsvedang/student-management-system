@@ -1397,6 +1397,134 @@
 
   <!-- ========================================== -->
   <!-- 2. ADMIN AUTHENTICATION VIEW               -->
+  
+  <!-- ========================================== -->
+  <!-- 1B. UNIVERSAL ADAPTIVE STUDENT PORTAL VIEW -->
+  <!-- ========================================== -->
+  <div id="universalView" class="public-container hidden">
+    <div class="public-brand-bar">
+      <div class="public-logo-wrap">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 15px; letter-spacing: -0.3px;">UNIVERSAL STUDENT PORTAL</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">SMART ADAPTIVE RECORD SYSTEM</div>
+        </div>
+      </div>
+      <div class="security-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>VERIFIED PORTAL</span>
+      </div>
+    </div>
+
+    <div class="public-card" id="universalCard">
+      <!-- Universal Header -->
+      <div class="public-hero">
+        <div class="badge badge-primary" style="margin-bottom: 10px;">Universal Student Portal</div>
+        <h1 class="public-title">Student Information & Verification Portal</h1>
+        <p class="public-desc">Enter your official Enrollment Number below. Our system will check your records and adapt automatically.</p>
+      </div>
+
+      <!-- Verification Input Box -->
+      <div class="verification-card">
+        <div class="flex items-center gap-3" style="margin-bottom: 12px;">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--primary-subtle); display:flex; align-items:center; justify-content:center; color:var(--primary);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 15px;">Check Your Enrollment Status</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Enter your enrollment number to check your status, update missing details, or register.</div>
+          </div>
+        </div>
+
+        <div class="verification-input-row" style="margin-top: 14px;">
+          <input type="text" id="universalEnrollmentInput" class="input" placeholder="e.g. 21001234 or EN10293" style="font-weight: 600; text-transform: uppercase;">
+          <button type="button" class="btn" id="btnUniversalVerify" onclick="handleUniversalVerification()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Check Record
+          </button>
+        </div>
+
+        <div id="universalStatusText" style="margin-top: 10px; font-size: 12px;"></div>
+      </div>
+
+      <!-- STATE A: All Details Up to Date (Complete Record) -->
+      <div id="universalCompleteState" class="hidden" style="margin-top: 24px; text-align: center; padding: 28px 20px; background: rgba(16, 185, 129, 0.06); border: 1px solid var(--success-border); border-radius: var(--radius-lg);">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--success-subtle); color: var(--success); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 2px solid var(--success-border);">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3 style="font-size: 20px; font-weight: 800; color: var(--success); margin-bottom: 8px;">All details are up to date!</h3>
+        <p style="font-size: 14px; color: var(--text-secondary); max-width: 500px; margin: 0 auto 20px;" id="universalCompleteMsg">
+          Your student profile is 100% complete and verified in the database. No further action is required.
+        </p>
+        <div style="text-align: left; margin-bottom: 22px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Verified Profile Records:</div>
+          <div class="verified-details-grid" id="universalCompleteDetailsGrid"></div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="resetUniversalSearch()">Check Another Enrollment Number</button>
+      </div>
+
+      <!-- STATE B & C: Submission Form (Either Missing Fields or New Student Registration) -->
+      <div id="universalFormState" class="hidden" style="margin-top: 24px;">
+        <!-- Adaptive Banner -->
+        <div id="universalAdaptiveBanner" style="padding: 14px 16px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 13px; line-height: 1.4;"></div>
+
+        <!-- Verified Info Chips (for existing students who have some fields missing) -->
+        <div id="universalExistingChipsContainer" class="hidden" style="margin-bottom: 20px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Already Verified on Record:</div>
+          <div class="verified-details-grid" id="universalExistingDetailsGrid"></div>
+        </div>
+
+        <form id="universalActiveForm" onsubmit="handleUniversalSubmit(event)">
+          <div style="font-size: 14px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+            <span id="universalFormSectionIcon">✏️</span>
+            <span id="universalFormSectionTitle">Please Fill Required Details</span>
+          </div>
+
+          <div id="universalFieldsContainer" style="display: grid; gap: 18px;"></div>
+
+          <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="resetUniversalSearch()">Cancel / Start Over</button>
+            <button type="submit" class="btn btn-lg" id="btnUniversalSubmit">
+              Submit Details ↗
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Universal Success Screen (after submission) -->
+    <div id="universalSuccessScreen" class="public-card hidden" style="text-align: center; padding: 48px 36px;">
+      <div style="width: 68px; height: 68px; border-radius: 50%; background: var(--success-subtle); color: var(--success); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid var(--success-border);">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--text-primary);" id="universalSuccessTitle">Submitted Successfully!</h2>
+      <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; font-size: 14px;" id="universalSuccessMsg">
+        Your student information has been recorded directly into the institutional spreadsheet database.
+      </p>
+      <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; max-width: 480px; margin: 0 auto 28px; text-align: left;">
+        <div style="font-weight: 800; font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Submission Receipt</div>
+        <div style="display: grid; gap: 8px; font-size: 13px;" id="universalReceiptDetails"></div>
+      </div>
+      <button type="button" class="btn" onclick="resetUniversalSearch()">Return to Portal Home</button>
+    </div>
+  </div>
+
   <!-- ========================================== -->
   <div id="loginView" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
     <div class="panel" style="width: 100%; max-width: 440px; padding: 36px 32px; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);">
@@ -1441,6 +1569,13 @@
       </form>
       
       <div id="loginErrorMsg" style="margin-top: 14px; font-size: 12px;"></div>
+      
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle); text-align: center;">
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Are you a student looking to verify or update your records?</div>
+        <button type="button" class="btn btn-secondary" onclick="openUniversalFormFromLogin()" style="width: 100%; justify-content: center; font-size: 13px;">
+          🎓 Open Student Verification Portal ↗
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1924,6 +2059,11 @@
     let missingShowComplete = false;
     let currentMissingFormConfig = null;
     let currentShareData = null;
+
+    // Universal Adaptive Form State
+    let currentUniversalData = null;
+    let currentUniversalEnrollment = '';
+    let currentUniversalMode = 'update';
     
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -4179,7 +4319,8 @@
         { label: 'Toggle Light/Dark Theme', icon: '◐', action: () => toggleTheme() },
         { label: 'Export All Students CSV', icon: '📥', action: () => exportStudentsCsv() },
         { label: 'Missing Data Audit & Gap Forms', icon: '⚠️', action: () => navigate('missing-data') },
-        { label: '1-Click Generate Missing Data Form (All Gaps)', icon: '⚡', action: () => { navigate('missing-data'); setTimeout(() => openMissingDataModal('all'), 300); } }
+        { label: '1-Click Generate Missing Data Form (All Gaps)', icon: '⚡', action: () => { navigate('missing-data'); setTimeout(() => openMissingDataModal('all'), 300); } },
+        { label: 'Universal Adaptive Student Portal Link', icon: '🌟', action: () => { window.open('?universal=1', '_blank'); } }
       ];
 
       let matched = defaultActions.filter(a => !q || a.label.toLowerCase().includes(q));
@@ -4235,12 +4376,300 @@
     });
 
     // ==========================================
+    // UNIVERSAL ADAPTIVE STUDENT PORTAL SYSTEM
+    // ==========================================
+
+    function initUniversalForm() {
+      // Hide other root views
+      if ($('loginView')) $('loginView').classList.add('hidden');
+      if ($('adminView')) $('adminView').classList.add('hidden');
+      if ($('publicView')) $('publicView').classList.add('hidden');
+      if ($('universalView')) $('universalView').classList.remove('hidden');
+
+      updateSeo('Student Verification & Update Portal', 'Universal student record lookup, missing data update, and registration system.');
+
+      // Check if enrollment param was passed in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const prefillEnroll = urlParams.get('enrollment') || urlParams.get('enroll') || '';
+      if (prefillEnroll && $('universalEnrollmentInput')) {
+        $('universalEnrollmentInput').value = prefillEnroll;
+        handleUniversalVerification();
+      }
+    }
+
+    function openUniversalFormFromLogin() {
+      const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?universal=1';
+      window.history.pushState({ path: newUrl }, '', newUrl);
+      initUniversalForm();
+    }
+
+    async function handleUniversalVerification() {
+      const input = $('universalEnrollmentInput');
+      const val = (input ? input.value : '').trim();
+      const status = $('universalStatusText');
+      const btn = $('btnUniversalVerify');
+
+      if (!val) {
+        showToast('Please enter your Enrollment Number.', 'warning');
+        if (status) status.innerHTML = '<span style="color:var(--warning);">Please enter your Enrollment Number.</span>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = 'Verifying Record…';
+      if (status) status.innerHTML = '<span style="color:var(--text-muted);">Searching institutional database for your record…</span>';
+
+      try {
+        const res = await jsonp({ action: 'universalLookup', enrollment: val });
+        if (!res.ok) throw new Error(res.error || 'Failed to verify enrollment number.');
+
+        currentUniversalData = res;
+        currentUniversalEnrollment = val;
+        if (status) status.innerHTML = '';
+
+        // CASE 1: All Details Up to Date (100% complete)
+        if (res.status === 'complete') {
+          $('universalFormState').classList.add('hidden');
+          $('universalCompleteState').classList.remove('hidden');
+
+          const sName = res.name || (res.student && (res.student['Name of Student'] || res.student['student name'])) || 'Student';
+          $('universalCompleteMsg').innerHTML = `Hello <strong>${esc(sName)}</strong>! Your student profile is 100% complete and verified in the database. No further action is required.`;
+
+          const grid = $('universalCompleteDetailsGrid');
+          const st = res.student || {};
+          grid.innerHTML = (res.headers || Object.keys(st)).map(h => `
+            <div class="verified-detail-chip">
+              <div class="verified-detail-label">${esc(h)}</div>
+              <div class="verified-detail-value">${esc(st[h] || '—')}</div>
+            </div>
+          `).join('');
+
+          showToast('Record verified! All details are 100% up to date.', 'success');
+        }
+        // CASE 2: Student found, but has Missing Fields
+        else if (res.status === 'incomplete') {
+          $('universalCompleteState').classList.add('hidden');
+          $('universalFormState').classList.remove('hidden');
+          currentUniversalMode = 'update';
+
+          const sName = res.name || (res.student && (res.student['Name of Student'] || res.student['student name'])) || 'Student';
+          $('universalAdaptiveBanner').className = '';
+          $('universalAdaptiveBanner').style.cssText = 'padding: 16px 18px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 13px; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning-border);';
+          $('universalAdaptiveBanner').innerHTML = `
+            <div style="font-weight: 800; color: var(--warning); font-size: 14px; display:flex; align-items:center; gap:8px;">
+              <span>⚠️</span> Student Verified: ${esc(sName)} (${esc(res.enrollment)})
+            </div>
+            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;">
+              Your profile is verified, but we detected <strong>${res.missingFields.length} missing field${res.missingFields.length > 1 ? 's' : ''}</strong> in institutional records: <strong>${esc(res.missingFields.join(', '))}</strong>. Please fill out the missing fields below to update your profile.
+            </div>
+          `;
+
+          // Show existing verified details as read-only chips
+          const filled = res.filledFields || {};
+          const filledKeys = Object.keys(filled);
+          if (filledKeys.length > 0) {
+            $('universalExistingChipsContainer').classList.remove('hidden');
+            $('universalExistingDetailsGrid').innerHTML = filledKeys.map(k => `
+              <div class="verified-detail-chip">
+                <div class="verified-detail-label">${esc(k)}</div>
+                <div class="verified-detail-value">${esc(filled[k])}</div>
+              </div>
+            `).join('');
+          } else {
+            $('universalExistingChipsContainer').classList.add('hidden');
+          }
+
+          // Render inputs for ONLY missing fields
+          $('universalFormSectionIcon').textContent = '✏️';
+          $('universalFormSectionTitle').textContent = `Update Pending Information (${res.missingFields.length} missing fields)`;
+          $('btnUniversalSubmit').textContent = 'Update My Missing Records ↗';
+
+          renderUniversalInputFields(res.missingFields);
+          showToast(`Verified! Please fill ${res.missingFields.length} missing fields.`, 'info');
+        }
+        // CASE 3: Not Found in sheet -> Complete Registration
+        else if (res.status === 'not_found') {
+          $('universalCompleteState').classList.add('hidden');
+          $('universalFormState').classList.remove('hidden');
+          currentUniversalMode = 'new';
+
+          $('universalAdaptiveBanner').className = '';
+          $('universalAdaptiveBanner').style.cssText = 'padding: 16px 18px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 13px; background: rgba(37, 99, 235, 0.08); border: 1px solid var(--primary-border);';
+          $('universalAdaptiveBanner').innerHTML = `
+            <div style="font-weight: 800; color: var(--primary); font-size: 14px; display:flex; align-items:center; gap:8px;">
+              <span>ℹ️</span> No Existing Record Found for Enrollment "${esc(res.enrollment)}"
+            </div>
+            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;">
+              This Enrollment Number is not yet registered in the institutional database. Please complete the registration form below with all your details to create your official student record.
+            </div>
+          `;
+
+          $('universalExistingChipsContainer').classList.add('hidden');
+
+          // Render inputs for ALL sheet columns (with Enrollment pre-filled and locked)
+          $('universalFormSectionIcon').textContent = '📝';
+          $('universalFormSectionTitle').textContent = 'New Student Complete Registration Form';
+          $('btnUniversalSubmit').textContent = 'Register & Submit Student Record ↗';
+
+          renderUniversalInputFields(res.headers, res.identityColumn, res.enrollment);
+          showToast('New student: Please complete all registration fields.', 'info');
+        }
+      } catch (err) {
+        if (status) status.innerHTML = `<span style="color:var(--danger)">${esc(err.message)}</span>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Check Record';
+      }
+    }
+
+    function renderUniversalInputFields(fields, lockedCol = null, lockedVal = null) {
+      const container = $('universalFieldsContainer');
+      container.innerHTML = fields.map(field => {
+        const isLocked = lockedCol && field === lockedCol;
+        const fType = guessFieldType(field);
+        const val = isLocked ? lockedVal : '';
+
+        return `
+          <div>
+            <label style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 6px;">
+              <span>${esc(field)} <span style="color:var(--danger)">*</span></span>
+              ${isLocked ? '<span class="badge badge-primary">IDENTIFIER (LOCKED)</span>' : ''}
+            </label>
+            <input 
+              type="${fType}" 
+              class="input universal-field-input" 
+              name="${esc(field)}" 
+              data-field="${esc(field)}" 
+              value="${esc(val)}" 
+              ${isLocked ? 'readonly style="background:var(--bg-subtle); font-weight:700;"' : ''} 
+              placeholder="Enter ${esc(field)}…" 
+              required
+            >
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function handleUniversalSubmit(e) {
+      e.preventDefault();
+      const btn = $('btnUniversalSubmit');
+      const inputs = document.querySelectorAll('.universal-field-input');
+
+      const formData = {};
+      let hasEmpty = false;
+
+      inputs.forEach(inp => {
+        const fName = inp.dataset.field;
+        const fVal = inp.value.trim();
+        if (!fVal && inp.required) {
+          hasEmpty = true;
+          inp.style.borderColor = 'var(--danger)';
+        } else {
+          inp.style.borderColor = '';
+        }
+        formData[fName] = fVal;
+      });
+
+      if (hasEmpty) {
+        showToast('Please fill in all required fields.', 'warning');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = 'Submitting Record…';
+
+      try {
+        const payload = {
+          action: 'universalSubmit',
+          enrollment: currentUniversalEnrollment,
+          mode: currentUniversalMode,
+          data: formData
+        };
+
+        const res = await post(payload);
+        if (!res.ok) throw new Error(res.error || 'Submission failed.');
+
+        // Show Universal Success Screen
+        $('universalCard').classList.add('hidden');
+        $('universalSuccessScreen').classList.remove('hidden');
+
+        const isNew = currentUniversalMode === 'new';
+        $('universalSuccessTitle').textContent = isNew ? 'Registration Complete!' : 'Profile Updated Successfully!';
+        $('universalSuccessMsg').textContent = res.message || (isNew ? 'Your student profile has been registered in the database.' : 'Your missing details have been updated.');
+
+        $('universalReceiptDetails').innerHTML = `
+          <div class="flex justify-between">
+            <span style="color:var(--text-muted);">Enrollment Number:</span>
+            <strong style="font-family:monospace;">${esc(currentUniversalEnrollment)}</strong>
+          </div>
+          <div class="flex justify-between">
+            <span style="color:var(--text-muted);">Submission Type:</span>
+            <span>${isNew ? '<span class="badge badge-primary">New Student Registration</span>' : '<span class="badge badge-success">Missing Fields Update</span>'}</span>
+          </div>
+          <div class="flex justify-between">
+            <span style="color:var(--text-muted);">Submitted Fields:</span>
+            <span><strong>${Object.keys(formData).length} fields recorded</strong></span>
+          </div>
+          <div class="flex justify-between">
+            <span style="color:var(--text-muted);">Timestamp:</span>
+            <span>${new Date().toLocaleString()}</span>
+          </div>
+        `;
+
+        showToast(isNew ? 'New student registration complete!' : 'Profile updated successfully!', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = currentUniversalMode === 'new' ? 'Register & Submit Record ↗' : 'Update My Missing Records ↗';
+      }
+    }
+
+    function resetUniversalSearch() {
+      if ($('universalEnrollmentInput')) {
+        $('universalEnrollmentInput').value = '';
+        $('universalEnrollmentInput').focus();
+      }
+      if ($('universalStatusText')) $('universalStatusText').innerHTML = '';
+      if ($('universalCompleteState')) $('universalCompleteState').classList.add('hidden');
+      if ($('universalFormState')) $('universalFormState').classList.add('hidden');
+      if ($('universalSuccessScreen')) $('universalSuccessScreen').classList.add('hidden');
+      if ($('universalCard')) $('universalCard').classList.remove('hidden');
+      currentUniversalData = null;
+      currentUniversalEnrollment = '';
+    }
+
+    function copyUniversalLink() {
+      const url = `${window.location.origin}${window.location.pathname}?universal=1`;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Universal Form link copied to clipboard!', 'success');
+      });
+    }
+
+    function openUniversalQrModal() {
+      const url = `${window.location.origin}${window.location.pathname}?universal=1`;
+      $('qrFormTitle').textContent = 'Universal Student Portal';
+      $('qrFormUrl').textContent = url;
+      
+      const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+      $('qrCodeImageWrap').innerHTML = `<img src="${qrApi}" alt="Universal Portal QR" style="width: 200px; height: 200px; display: block;">`;
+      
+      $('qrModal').dataset.url = url;
+      $('qrModal').classList.remove('hidden');
+    }
+
+
+    // ==========================================
     // INITIALIZATION
     // ==========================================
     const urlParams = new URLSearchParams(window.location.search);
     const requestedFormId = urlParams.get('form') || urlParams.get('formId');
+    const isUniversal = urlParams.has('universal') || urlParams.has('portal') || requestedFormId === 'universal';
 
-    if (requestedFormId) {
+    if (isUniversal) {
+      initUniversalForm();
+    } else if (requestedFormId) {
       initPublicForm(requestedFormId);
     } else if (authToken) {
       $('loginView').classList.add('hidden');
